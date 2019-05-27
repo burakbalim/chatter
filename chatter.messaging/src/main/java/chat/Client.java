@@ -7,13 +7,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.*;
 
 import static java.lang.System.out;
 
 public class Client {
+
+    private static Scanner scanner = new Scanner(System.in);
+    private static long userId;
 
     public static void main(String[] args) {
         Socket socket = client1();
@@ -31,13 +32,21 @@ public class Client {
         new Thread(() -> {
             try {
                 while (true) {
-                    Scanner scanner = new Scanner(System.in);  // Create a Scanner object
-                    scanner.nextLine();
+
                     ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+
+                    out.print("Message Text: ");
+
+                    String message = scanner.nextLine();
+
                     CommunicationModel communicationModel = new CommunicationModel();
-                    communicationModel.setMessage("Hello World");
-                    communicationModel.setSenderUser(2);
-                    communicationModel.setUsers(Collections.singletonList(1));
+                    communicationModel.setMessage(message);
+                    communicationModel.setSenderUser(userId);
+
+                    out.print("Send for user: ");
+                    String userIds = scanner.nextLine();
+                    communicationModel.setUserIds(getUserId(userIds.split(",")));
+
                     outputStream.writeObject(communicationModel);
                 }
             } catch (IOException e) {
@@ -49,18 +58,27 @@ public class Client {
 
     }
 
-    private static Socket client1() {
-        Scanner scanner = new Scanner(System.in);  // Create a Scanner object
-        out.println("Define client");
-        return createClient(scanner.nextInt(), "CC", "SS");
+    private static List<Long> getUserId(String[] split) {
+        List<Long> list = new ArrayList<>();
+
+        Arrays.stream(split).forEach(i -> list.add(Long.parseLong(i)));
+
+        return list;
     }
 
+    private static Socket client1() {
+        out.println("Define client");
+        userId = scanner.nextLong();
+        return createClient(userId);
+    }
 
-    private static Socket createClient(long id, String username, String surname) {
+    private static Socket createClient(long id) {
         try {
-            Socket socket = new Socket("localhost", 2001);
+            out.println("Define port");
+            int port = scanner.nextInt();
+            Socket socket = new Socket("localhost", port);
             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-            outputStream.writeObject(createUser(id, username, surname));
+            outputStream.writeObject(createUser(id));
             return socket;
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,10 +87,10 @@ public class Client {
     }
 
 
-    private static User createUser(long id, String username, String surname) {
+    private static User createUser(long id) {
         User user = new User();
-        user.setSurname(surname);
-        user.setUsername(username);
+        user.setSurname("SS");
+        user.setUsername("CC");
         user.setId(id);
         return user;
     }

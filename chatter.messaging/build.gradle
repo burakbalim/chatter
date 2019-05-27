@@ -13,5 +13,6 @@ repositories {
 
 dependencies {
     compile 'com.hazelcast:hazelcast:3.12'
+    compile 'org.springframework.boot:spring-boot-starter:1.5.1.RELEASE'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

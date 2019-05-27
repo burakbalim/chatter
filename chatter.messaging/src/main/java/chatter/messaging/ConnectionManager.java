@@ -1,7 +1,10 @@
 package chatter.messaging;
 
+import chatter.messaging.cache.ChatterCache;
+import chatter.messaging.cache.DistributionCache;
 import chatter.messaging.exception.ConnectionManagerException;
 import chatter.messaging.model.ConnectedUserModel;
+import chatter.messaging.model.MessageCache;
 
 import java.net.Socket;
 import java.util.concurrent.*;
@@ -11,6 +14,8 @@ public class ConnectionManager {
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private LinkedBlockingQueue<Future> queue = new LinkedBlockingQueue<>();
     private OnlineUser onlineUser = OnlineUser.getInstance();
+    private DistributionCache distributionCache = DistributionCache.getInstance();
+    private ChatterCache chatterCache = ChatterCache.getInstance();
     private boolean isStopSignal;
 
     private static ConnectionManager instance;
@@ -45,8 +50,9 @@ public class ConnectionManager {
                 if (future != null) {
                     if (future.isDone()) {
                         ConnectedUserModel connection = (ConnectedUserModel) future.get();
-                        onlineUser.add(connection.getUser().getId(), connection);
-
+                        Long id = connection.getUser().getId();
+                        onlineUser.add(id, connection);
+                        distributionCache.add(new MessageCache(chatterCache.getMessageTopicName(), id));
                         threadPoolExecutor.submit(new WorkerTask(connection));
                     } else {
                         queue.add(future);

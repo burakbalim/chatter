@@ -1,13 +1,16 @@
 package chatter.messaging.hazelcast;
 
+import chatter.messaging.bus.MessagingBus;
+import chatter.messaging.cache.ChatterCache;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.ITopic;
 
 public class HazelcastInstanceProvider {
 
-    private HazelcastInstance hazelcastInstance;
-    private EventProcess eventProcess = new EventProcess();
     private static HazelcastInstanceProvider instance;
+    private ChatterCache chatterCache = ChatterCache.getInstance();
+    private HazelcastInstance hazelcastInstance;
 
     private HazelcastInstanceProvider() {
 
@@ -20,9 +23,18 @@ public class HazelcastInstanceProvider {
         return instance;
     }
 
-    public void start(HazelcastConfiguration hazelcastCfg) {
+    public void start() {
         hazelcastInstance = Hazelcast.newHazelcastInstance();
-        eventProcess.start(hazelcastInstance);
+        prepareEventMessageListener();
+    }
+
+    public void stop(){
+        hazelcastInstance.shutdown();
+    }
+
+    private void prepareEventMessageListener() {
+        ITopic<Object> topic = hazelcastInstance.getTopic(chatterCache.getMessageTopicName());
+        topic.addMessageListener(new MessagingBus());
     }
 
     public HazelcastInstance getHazelcastInstance() {

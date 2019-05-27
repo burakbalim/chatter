@@ -17,8 +17,12 @@ public class Server {
     private ServerSocket serverSocket = null;
     private boolean stopSignal;
 
-    public void build(int address) throws IOException {
-        serverSocket = new ServerSocket(address);
+    public void build(int address) {
+        try {
+            serverSocket = new ServerSocket(address);
+        } catch (IOException e) {
+            throw new ServerException("Occurred exception while new serversocket ", e);
+        }
     }
 
     public void start() {

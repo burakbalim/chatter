@@ -1,18 +1,17 @@
 package chatter.messaging;
 
-import chatter.messaging.cache.ChatterCache;
+import chatter.messaging.cache.DistributionCache;
 import chatter.messaging.event.Event;
 import chatter.messaging.event.IEvent;
 import chatter.messaging.event.IEventImpl;
 import chatter.messaging.model.CommunicationModel;
-import chatter.messaging.model.ConnectedUserModel;
+import chatter.messaging.model.MessageCache;
 import chatter.messaging.model.MessageEvent;
 
 public class MessageSender {
 
     private static MessageSender instance;
-    private OnlineUser onlineUser = OnlineUser.getInstance();
-    private ChatterCache chatterCache = ChatterCache.getInstance();
+    private DistributionCache distributionCache = DistributionCache.getInstance();
     private IEvent event = IEventImpl.getInstance();
 
     private MessageSender() {
@@ -26,26 +25,25 @@ public class MessageSender {
         return instance;
     }
 
-    public void send(CommunicationModel communicationModel) {
+    void send(CommunicationModel communicationModel) {
         String message = communicationModel.getMessage();
 
-        communicationModel.getUsers().stream().map(user -> onlineUser.get(user)).forEach(connectedUserModel -> {
-            writeMessage(connectedUserModel, message);
-        });
+        communicationModel.getUserIds().stream().map(userId ->
+                distributionCache.get(userId)).forEach(messageCache -> writeMessage(messageCache, message));
 
-        writeMessage(onlineUser.get(communicationModel.getSenderUser()), message);
+        writeMessage(distributionCache.get(communicationModel.getSenderUser()), message);
     }
 
-    private void writeMessage(ConnectedUserModel connectedUserModel, String message) {
+    private void writeMessage(MessageCache connectedUserModel, String message) {
         event.fire(getEvent(connectedUserModel, message));
     }
 
-    private Event getEvent(ConnectedUserModel connectedUserModel, String message) {
+    private Event getEvent(MessageCache messageCache, String message) {
         MessageEvent eventPayload = new MessageEvent();
-        eventPayload.setUserId(connectedUserModel.getUser().getId());
+        eventPayload.setUserId(messageCache.getUserId());
         eventPayload.setMessage(message);
         Event eventModel = new Event();
-        eventModel.setTopic(chatterCache.getMessageTopicName());
+        eventModel.setTopic(messageCache.getEventTopic());
         eventModel.setEventPayload(eventPayload);
         return eventModel;
     }
