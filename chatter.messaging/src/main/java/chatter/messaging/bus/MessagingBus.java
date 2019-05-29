@@ -6,15 +6,20 @@ import chatter.messaging.event.EventPayload;
 import chatter.messaging.exception.ServerException;
 import chatter.messaging.model.ConnectedUserModel;
 import chatter.messaging.model.MessageEvent;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-
+@Component
 public class MessagingBus extends EventHandler {
 
-    private OnlineUser onlineUser = OnlineUser.getInstance();
+    private OnlineUser onlineUser;
+
+    public MessagingBus(OnlineUser onlineUser) {
+        this.onlineUser = onlineUser;
+    }
 
     @Override
     public void handle(EventPayload event) {

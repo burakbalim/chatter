@@ -12,12 +12,15 @@ import java.net.Socket;
 public class WorkerTask implements Runnable {
 
     private ConnectedUserModel connectedUserModel;
-    private MessageSender messageSender = MessageSender.getInstance();
-    private OnlineUser onlineUser = OnlineUser.getInstance();
-    private DistributionCache distributionCache = DistributionCache.getInstance();
+    private MessageSender messageSender;
+    private OnlineUser onlineUser;
+    private DistributionCache distributionCache;
 
-    public WorkerTask(ConnectedUserModel connectedUserModel) {
+    public WorkerTask(ConnectedUserModel connectedUserModel, MessageSender messageSender, OnlineUser onlineUser, DistributionCache distributionCache) {
         this.connectedUserModel = connectedUserModel;
+        this.messageSender = messageSender;
+        this.onlineUser = onlineUser;
+        this.distributionCache = distributionCache;
     }
 
     @Override

@@ -2,12 +2,14 @@ package chatter.messaging.event;
 
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public abstract class EventHandler implements MessageListener<Object> {
 
     private ExecutorService executorService = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());

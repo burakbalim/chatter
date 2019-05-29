@@ -3,6 +3,8 @@ package chatter.messaging;
 import chatter.messaging.exception.ServerException;
 import chatter.messaging.model.ConnectedUserModel;
 import chatter.messaging.model.User;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,12 +12,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
 
+@Service
 public class Server {
 
-    private ConnectionManager connectionManager = ConnectionManager.getInstance();
+    private ConnectionManager connectionManager;
+
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private ServerSocket serverSocket = null;
     private boolean stopSignal;
+
+    public Server(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
+    }
 
     public void build(int address) {
         try {

@@ -1,20 +1,14 @@
 package chatter.messaging;
 
 import chatter.messaging.model.ConnectedUserModel;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component
 public class OnlineUser {
 
     private ConcurrentHashMap<Long, ConnectedUserModel> concurrentHashMap = new ConcurrentHashMap<>();
-    private static OnlineUser instance;
-
-    public static synchronized OnlineUser getInstance() {
-        if (instance == null) {
-            instance = new OnlineUser();
-        }
-        return instance;
-    }
 
     public ConnectedUserModel get(long id) {
         return this.concurrentHashMap.get(id);

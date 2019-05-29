@@ -3,26 +3,20 @@ package chatter.messaging;
 import chatter.messaging.cache.DistributionCache;
 import chatter.messaging.event.Event;
 import chatter.messaging.event.IEvent;
-import chatter.messaging.event.IEventImpl;
 import chatter.messaging.model.CommunicationModel;
 import chatter.messaging.model.MessageCache;
 import chatter.messaging.model.MessageEvent;
+import org.springframework.stereotype.Service;
 
+@Service
 public class MessageSender {
 
-    private static MessageSender instance;
-    private DistributionCache distributionCache = DistributionCache.getInstance();
-    private IEvent event = IEventImpl.getInstance();
+    private DistributionCache distributionCache;
+    private IEvent event;
 
-    private MessageSender() {
-
-    }
-
-    public static synchronized MessageSender getInstance() {
-        if (instance == null) {
-            instance = new MessageSender();
-        }
-        return instance;
+    public MessageSender(DistributionCache distributionCache, IEvent event) {
+        this.distributionCache = distributionCache;
+        this.event = event;
     }
 
     void send(CommunicationModel communicationModel) {

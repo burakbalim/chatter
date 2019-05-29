@@ -5,30 +5,26 @@ import chatter.messaging.cache.DistributionCache;
 import chatter.messaging.exception.ConnectionManagerException;
 import chatter.messaging.model.ConnectedUserModel;
 import chatter.messaging.model.MessageCache;
+import org.springframework.stereotype.Component;
 
-import java.net.Socket;
 import java.util.concurrent.*;
 
+@Component
 public class ConnectionManager {
 
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private LinkedBlockingQueue<Future> queue = new LinkedBlockingQueue<>();
-    private OnlineUser onlineUser = OnlineUser.getInstance();
-    private DistributionCache distributionCache = DistributionCache.getInstance();
-    private ChatterCache chatterCache = ChatterCache.getInstance();
+    private DistributionCache distributionCache;
+    private ChatterCache chatterCache;
+    private OnlineUser onlineUser;
+    private MessageSender messageSender;
     private boolean isStopSignal;
 
-    private static ConnectionManager instance;
-
-    private ConnectionManager() {
-
-    }
-
-    public static synchronized ConnectionManager getInstance() {
-        if (instance == null) {
-            instance = new ConnectionManager();
-        }
-        return instance;
+    public ConnectionManager(OnlineUser onlineUser, ChatterCache chatterCache, DistributionCache distributionCache, MessageSender messageSender) {
+        this.onlineUser = onlineUser;
+        this.chatterCache = chatterCache;
+        this.distributionCache = distributionCache;
+        this.messageSender = messageSender;
     }
 
     public void start() {
@@ -53,7 +49,7 @@ public class ConnectionManager {
                         Long id = connection.getUser().getId();
                         onlineUser.add(id, connection);
                         distributionCache.add(new MessageCache(chatterCache.getMessageTopicName(), id));
-                        threadPoolExecutor.submit(new WorkerTask(connection));
+                        threadPoolExecutor.submit(new WorkerTask(connection, messageSender, onlineUser, distributionCache));
                     } else {
                         queue.add(future);
                     }
@@ -62,7 +58,7 @@ public class ConnectionManager {
                 Thread.currentThread().interrupt();
                 throw new ConnectionManagerException("Occurred exception while user operation", e);
             } catch (ExecutionException e) {
-                throw new ConnectionManagerException("Occurred exception while user operation", e);
+                //log
             }
         }
     }

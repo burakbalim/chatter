@@ -5,36 +5,36 @@ import chatter.messaging.cache.ChatterCache;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ITopic;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+
+@Service
 public class HazelcastInstanceProvider {
 
     private static HazelcastInstanceProvider instance;
-    private ChatterCache chatterCache = ChatterCache.getInstance();
+    private ChatterCache chatterCache;
     private HazelcastInstance hazelcastInstance;
+    private MessagingBus messagingBus;
 
-    private HazelcastInstanceProvider() {
-
+    public HazelcastInstanceProvider(ChatterCache chatterCache, MessagingBus messagingBus) {
+        this.chatterCache = chatterCache;
+        this.messagingBus = messagingBus;
     }
 
-    public static synchronized HazelcastInstanceProvider  getInstance() {
-        if (instance == null) {
-            instance = new HazelcastInstanceProvider();
-        }
-        return instance;
-    }
-
-    public void start() {
+    @PostConstruct
+    public void init() {
         hazelcastInstance = Hazelcast.newHazelcastInstance();
-        prepareEventMessageListener();
     }
 
-    public void stop(){
+    public void close(){
         hazelcastInstance.shutdown();
     }
 
-    private void prepareEventMessageListener() {
+    public void prepareEventMessageListener() {
         ITopic<Object> topic = hazelcastInstance.getTopic(chatterCache.getMessageTopicName());
-        topic.addMessageListener(new MessagingBus());
+
+        topic.addMessageListener(messagingBus);
     }
 
     public HazelcastInstance getHazelcastInstance() {

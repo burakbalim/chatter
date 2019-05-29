@@ -1,19 +1,14 @@
 package chatter.messaging.cache;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class ChatterCache {
 
-    private static ChatterCache instance;
     private String messageTopicName;
 
-    private ChatterCache() {
+    public ChatterCache() {
 
-    }
-
-    public static synchronized ChatterCache getInstance() {
-        if (instance == null) {
-            instance = new ChatterCache();
-        }
-        return instance;
     }
 
     public String getMessageTopicName() {

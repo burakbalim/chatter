@@ -1,4 +1,4 @@
-package chat;
+package chatter;
 
 import chatter.messaging.model.CommunicationModel;
 import chatter.messaging.model.User;
@@ -37,14 +37,14 @@ public class Client {
 
                     out.print("Message Text: ");
 
-                    String message = scanner.nextLine();
+                    String message = scanner.next();
 
                     CommunicationModel communicationModel = new CommunicationModel();
                     communicationModel.setMessage(message);
                     communicationModel.setSenderUser(userId);
 
                     out.print("Send for user: ");
-                    String userIds = scanner.nextLine();
+                    String userIds = scanner.next();
                     communicationModel.setUserIds(getUserId(userIds.split(",")));
 
                     outputStream.writeObject(communicationModel);

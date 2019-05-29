@@ -2,33 +2,22 @@ package chatter.messaging.cache;
 
 import chatter.messaging.hazelcast.HazelcastInstanceProvider;
 import chatter.messaging.model.MessageCache;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class DistributionCache implements Serializable {
 
     private static DistributionCache instance;
     private Map<Long, MessageCache> messageCacheMap;
+    //TODO change to cache provider
+    private HazelcastInstanceProvider hazelcastInstanceProvider;
 
-    private DistributionCache(String cacheType) {
-        if(cacheType.equals("Hazelcast")) {
-            HazelcastInstanceProvider hazelcastInstanceProvider = HazelcastInstanceProvider.getInstance();
-            messageCacheMap = hazelcastInstanceProvider.getHazelcastInstance().getMap("userCache");
-        }
-        else {
-            messageCacheMap = new HashMap<>();
-        }
-    }
-
-    public static synchronized DistributionCache getInstance() {
-        if (instance == null) {
-            //TODO get cache on another configuration
-            instance = new DistributionCache("Hazelcast");
-        }
-
-        return instance;
+    private DistributionCache(HazelcastInstanceProvider hazelcastInstanceProvider) {
+        messageCacheMap = hazelcastInstanceProvider.getHazelcastInstance().getMap("userCache");
     }
 
     public MessageCache get(long id) {
