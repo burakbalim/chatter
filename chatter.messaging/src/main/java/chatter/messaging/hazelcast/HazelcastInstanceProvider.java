@@ -12,7 +12,6 @@ import javax.annotation.PostConstruct;
 @Service
 public class HazelcastInstanceProvider {
 
-    private static HazelcastInstanceProvider instance;
     private ChatterCache chatterCache;
     private HazelcastInstance hazelcastInstance;
     private MessagingBus messagingBus;

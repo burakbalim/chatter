@@ -13,14 +13,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class Main implements CommandLineRunner {
 
-    @Autowired
     private Server server;
 
-    @Autowired
     private ChatterCache chatterCache;
 
-    @Autowired
     private HazelcastInstanceProvider hazelcastInstanceProvider;
+
+    public Main(Server server, ChatterCache chatterCache, HazelcastInstanceProvider hazelcastInstanceProvider) {
+        this.server = server;
+        this.chatterCache = chatterCache;
+        this.hazelcastInstanceProvider = hazelcastInstanceProvider;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
