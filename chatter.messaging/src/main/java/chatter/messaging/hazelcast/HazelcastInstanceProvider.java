@@ -5,6 +5,8 @@ import chatter.messaging.cache.ChatterCache;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ITopic;
+import com.hazelcast.core.MessageListener;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -12,14 +14,7 @@ import javax.annotation.PostConstruct;
 @Service
 public class HazelcastInstanceProvider {
 
-    private ChatterCache chatterCache;
     private HazelcastInstance hazelcastInstance;
-    private MessagingBus messagingBus;
-
-    public HazelcastInstanceProvider(ChatterCache chatterCache, MessagingBus messagingBus) {
-        this.chatterCache = chatterCache;
-        this.messagingBus = messagingBus;
-    }
 
     @PostConstruct
     public void init() {
@@ -30,10 +25,11 @@ public class HazelcastInstanceProvider {
         hazelcastInstance.shutdown();
     }
 
-    public void prepareEventMessageListener() {
-        ITopic<Object> topic = hazelcastInstance.getTopic(chatterCache.getMessageTopicName());
 
-        topic.addMessageListener(messagingBus);
+    public <T> void addListener(String topic, MessageListener<T> object) {
+        ITopic<T> iTopic = hazelcastInstance.getTopic(topic);
+
+        iTopic.addMessageListener(object);
     }
 
     public HazelcastInstance getHazelcastInstance() {

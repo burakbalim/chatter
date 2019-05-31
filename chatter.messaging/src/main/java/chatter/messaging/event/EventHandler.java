@@ -1,20 +1,20 @@
 package chatter.messaging.event;
 
+import chatter.messaging.hazelcast.HazelcastInstanceProvider;
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-@Component
 public abstract class EventHandler implements MessageListener<Object> {
 
-    private ExecutorService executorService = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+    private HazelcastInstanceProvider hazelcastInstanceProvider;
+
+    public EventHandler(HazelcastInstanceProvider hazelcastInstanceProvider) {
+        this.hazelcastInstanceProvider = hazelcastInstanceProvider;
+    }
 
     public abstract void handle(EventPayload event);
+    public abstract void register();
 
     @Override
     public void onMessage(Message<Object> message) {
@@ -22,4 +22,9 @@ public abstract class EventHandler implements MessageListener<Object> {
 
         handle(messageObject);
     }
+
+    protected void onRegister(String topic){
+        this.hazelcastInstanceProvider.addListener(topic, this);
+    }
+
 }

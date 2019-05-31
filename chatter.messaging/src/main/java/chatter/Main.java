@@ -2,6 +2,7 @@ package chatter;
 
 import chatter.messaging.Server;
 import chatter.messaging.cache.ChatterCache;
+import chatter.messaging.event.EventHandler;
 import chatter.messaging.hazelcast.HazelcastConfiguration;
 import chatter.messaging.hazelcast.HazelcastInstanceProvider;
 import com.hazelcast.config.Config;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication
 public class Main implements CommandLineRunner {
@@ -18,6 +20,9 @@ public class Main implements CommandLineRunner {
     private ChatterCache chatterCache;
 
     private HazelcastInstanceProvider hazelcastInstanceProvider;
+
+    @Autowired
+    private ApplicationContext appContext;
 
     public Main(Server server, ChatterCache chatterCache, HazelcastInstanceProvider hazelcastInstanceProvider) {
         this.server = server;
@@ -39,7 +44,7 @@ public class Main implements CommandLineRunner {
         Config config = new Config();
         hazelcastCfg.setConfig(config);
 
-        hazelcastInstanceProvider.prepareEventMessageListener();
+        registerEventBus();
 
         server.build(port);
         server.start();
@@ -48,5 +53,16 @@ public class Main implements CommandLineRunner {
             server.stop();
             hazelcastInstanceProvider.close();
         }));
+    }
+
+    private void registerEventBus() {
+        String[] beanDefinitionNames = appContext.getBeanDefinitionNames();
+        for(String item : beanDefinitionNames) {
+            Object bean = appContext.getBean(item);
+            if(bean instanceof EventHandler) {
+                EventHandler bean1 = (EventHandler) bean;
+                bean1.register();
+            }
+        }
     }
 }

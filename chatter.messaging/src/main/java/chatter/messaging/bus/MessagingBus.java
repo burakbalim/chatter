@@ -1,9 +1,11 @@
 package chatter.messaging.bus;
 
 import chatter.messaging.OnlineUser;
+import chatter.messaging.cache.ChatterCache;
 import chatter.messaging.event.EventHandler;
 import chatter.messaging.event.EventPayload;
 import chatter.messaging.exception.ServerException;
+import chatter.messaging.hazelcast.HazelcastInstanceProvider;
 import chatter.messaging.model.ConnectedUserModel;
 import chatter.messaging.model.MessageEvent;
 import org.springframework.stereotype.Component;
@@ -16,9 +18,12 @@ import java.net.Socket;
 public class MessagingBus extends EventHandler {
 
     private OnlineUser onlineUser;
+    private ChatterCache chatterCache;
 
-    public MessagingBus(OnlineUser onlineUser) {
+    public MessagingBus(OnlineUser onlineUser, ChatterCache chatterCache, HazelcastInstanceProvider hazelcastInstanceProvider) {
+        super(hazelcastInstanceProvider);
         this.onlineUser = onlineUser;
+        this.chatterCache = chatterCache;
     }
 
     @Override
@@ -33,5 +38,10 @@ public class MessagingBus extends EventHandler {
         } catch (IOException exception) {
             throw new ServerException("Message sender exception for model:" + connectedUserModel, exception);
         }
+    }
+
+    @Override
+    public void register() {
+        super.onRegister(chatterCache.getMessageTopicName());
     }
 }
