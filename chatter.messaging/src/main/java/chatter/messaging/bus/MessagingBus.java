@@ -3,7 +3,7 @@ package chatter.messaging.bus;
 import chatter.messaging.OnlineUser;
 import chatter.messaging.cache.ChatterCache;
 import chatter.messaging.event.EventHandler;
-import chatter.messaging.event.EventPayload;
+import chatter.messaging.event.Event;
 import chatter.messaging.exception.ServerException;
 import chatter.messaging.hazelcast.HazelcastInstanceProvider;
 import chatter.messaging.model.ConnectedUserModel;
@@ -27,8 +27,8 @@ public class MessagingBus extends EventHandler {
     }
 
     @Override
-    public void handle(EventPayload event) {
-        MessageEvent  messageEvent = (MessageEvent) event;
+    public void handle(Event event) {
+        MessageEvent  messageEvent = (MessageEvent) event.getEventPayload();
         ConnectedUserModel connectedUserModel = onlineUser.get(messageEvent.getUserId());
 
         try {

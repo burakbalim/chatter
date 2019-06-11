@@ -8,6 +8,8 @@ import chatter.messaging.model.MessageCache;
 import chatter.messaging.model.MessageEvent;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class MessageSender {
 
@@ -36,9 +38,11 @@ public class MessageSender {
         MessageEvent eventPayload = new MessageEvent();
         eventPayload.setUserId(messageCache.getUserId());
         eventPayload.setMessage(message);
-        Event eventModel = new Event();
+        Event<MessageEvent> eventModel = new Event<>();
         eventModel.setTopic(messageCache.getEventTopic());
         eventModel.setEventPayload(eventPayload);
+        eventModel.setEventOwner("MessageSender");
+        eventModel.setEventId(UUID.randomUUID().toString());
         return eventModel;
     }
 }

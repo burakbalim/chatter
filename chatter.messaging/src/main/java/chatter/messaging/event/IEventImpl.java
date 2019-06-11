@@ -16,6 +16,6 @@ public class IEventImpl implements IEvent {
     @Override
     public void fire(Event ievent) {
         ITopic<Object> topic = hazelcastInstanceProvider.getHazelcastInstance().getTopic(ievent.getTopic());
-        topic.publish(ievent.getEventPayload());
+        topic.publish(ievent);
     }
 }

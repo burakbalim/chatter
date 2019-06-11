@@ -3,9 +3,11 @@ package chatter.messaging.event;
 import chatter.messaging.hazelcast.HazelcastInstanceProvider;
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
-import org.springframework.stereotype.Component;
 
 public abstract class EventHandler implements MessageListener<Object> {
+
+    protected abstract void handle(Event event);
+    protected abstract void register();
 
     private HazelcastInstanceProvider hazelcastInstanceProvider;
 
@@ -13,12 +15,9 @@ public abstract class EventHandler implements MessageListener<Object> {
         this.hazelcastInstanceProvider = hazelcastInstanceProvider;
     }
 
-    public abstract void handle(EventPayload event);
-    public abstract void register();
-
     @Override
     public void onMessage(Message<Object> message) {
-        EventPayload messageObject = (EventPayload) message.getMessageObject();
+        Event messageObject = (Event) message.getMessageObject();
 
         handle(messageObject);
     }
@@ -26,5 +25,4 @@ public abstract class EventHandler implements MessageListener<Object> {
     protected void onRegister(String topic){
         this.hazelcastInstanceProvider.addListener(topic, this);
     }
-
 }

@@ -1,8 +1,8 @@
 package chatter.messaging.model;
 
-import chatter.messaging.event.EventPayload;
+import java.io.Serializable;
 
-public class MessageEvent extends EventPayload {
+public class MessageEvent implements Serializable {
 
     private Long userId;
     private String message;

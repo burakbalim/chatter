@@ -1,9 +1,37 @@
 package chatter.messaging.event;
 
-public class Event {
+import java.io.Serializable;
+
+public class Event<T extends Serializable> implements Serializable {
 
     private String topic;
-    private EventPayload eventPayload;
+    private String eventId;
+    private String eventOwner;
+    private T eventPayload;
+
+    public String getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
+    }
+
+    public String getEventOwner() {
+        return eventOwner;
+    }
+
+    public void setEventOwner(String eventOwner) {
+        this.eventOwner = eventOwner;
+    }
+
+    public T getEventPayload() {
+        return eventPayload;
+    }
+
+    public void setEventPayload(T eventPayload) {
+        this.eventPayload = eventPayload;
+    }
 
     public String getTopic() {
         return topic;
@@ -11,13 +39,5 @@ public class Event {
 
     public void setTopic(String topic) {
         this.topic = topic;
-    }
-
-    public EventPayload getEventPayload() {
-        return eventPayload;
-    }
-
-    public void setEventPayload(EventPayload eventPayload) {
-        this.eventPayload = eventPayload;
     }
 }
