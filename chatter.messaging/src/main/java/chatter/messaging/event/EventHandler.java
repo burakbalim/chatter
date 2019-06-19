@@ -7,7 +7,7 @@ import com.hazelcast.core.MessageListener;
 public abstract class EventHandler implements MessageListener<Object> {
 
     protected abstract void handle(Event event);
-    protected abstract void register();
+    public abstract void register();
 
     private HazelcastInstanceProvider hazelcastInstanceProvider;
 
