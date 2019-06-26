@@ -1,6 +1,6 @@
 package chatter.messaging.bus;
 
-import chatter.messaging.OnlineUser;
+import chatter.messaging.cache.OnlineUser;
 import chatter.messaging.cache.ChatterCache;
 import chatter.messaging.event.EventHandler;
 import chatter.messaging.event.Event;

@@ -2,6 +2,7 @@ package chatter.messaging;
 
 import chatter.messaging.cache.ChatterCache;
 import chatter.messaging.cache.DistributionCache;
+import chatter.messaging.cache.OnlineUser;
 import chatter.messaging.exception.ConnectionManagerException;
 import chatter.messaging.model.ConnectedUserModel;
 import chatter.messaging.model.MessageCache;
