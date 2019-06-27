@@ -28,7 +28,7 @@ public abstract class EventHandler implements MessageListener<Object> {
         try {
             handle(messageObject);
         } catch (MessageBusException e) {
-            logger.log(Level.WARNING, "Occurred Exception in EventHander. Exception: {0}", e);
+            logger.log(Level.WARNING, "Occurred Exception in EventHandler. Exception: {0}", e);
         }
     }
 
