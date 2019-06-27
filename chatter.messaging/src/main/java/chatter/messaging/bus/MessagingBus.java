@@ -4,6 +4,8 @@ import chatter.messaging.cache.OnlineUser;
 import chatter.messaging.cache.ChatterCache;
 import chatter.messaging.event.EventHandler;
 import chatter.messaging.event.Event;
+import chatter.messaging.exception.ChatterException;
+import chatter.messaging.exception.MessageBusException;
 import chatter.messaging.exception.ServerException;
 import chatter.messaging.hazelcast.HazelcastInstanceProvider;
 import chatter.messaging.model.ConnectedUserModel;
@@ -27,7 +29,7 @@ public class MessagingBus extends EventHandler {
     }
 
     @Override
-    public void handle(Event event) {
+    public void handle(Event event) throws MessageBusException {
         MessageEvent  messageEvent = (MessageEvent) event.getEventPayload();
         ConnectedUserModel connectedUserModel = onlineUser.get(messageEvent.getUserId());
 
@@ -36,7 +38,7 @@ public class MessagingBus extends EventHandler {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(client.getOutputStream());
             objectOutputStream.writeObject(messageEvent.getMessage());
         } catch (IOException exception) {
-            throw new ServerException("Message sender exception for model:" + connectedUserModel, exception);
+            throw new MessageBusException(exception, "Message sender exception for model:" + connectedUserModel);
         }
     }
 
