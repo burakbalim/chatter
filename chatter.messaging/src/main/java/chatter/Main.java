@@ -1,11 +1,11 @@
 package chatter;
 
+import chatter.messaging.IService;
 import chatter.messaging.Server;
+import chatter.messaging.ServiceTracing;
 import chatter.messaging.cache.ChatterCache;
 import chatter.messaging.event.EventHandler;
-import chatter.messaging.hazelcast.HazelcastConfiguration;
 import chatter.messaging.hazelcast.HazelcastInstanceProvider;
-import com.hazelcast.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -17,6 +17,8 @@ public class Main implements CommandLineRunner {
 
     private Server server;
 
+    private ServiceTracing serviceTracing;
+
     private ChatterCache chatterCache;
 
     private HazelcastInstanceProvider hazelcastInstanceProvider;
@@ -24,10 +26,11 @@ public class Main implements CommandLineRunner {
     @Autowired
     private ApplicationContext appContext;
 
-    public Main(Server server, ChatterCache chatterCache, HazelcastInstanceProvider hazelcastInstanceProvider) {
+    public Main(Server server, ServiceTracing serviceTracing, ChatterCache chatterCache, HazelcastInstanceProvider hazelcastInstanceProvider) {
         this.server = server;
         this.chatterCache = chatterCache;
         this.hazelcastInstanceProvider = hazelcastInstanceProvider;
+        this.serviceTracing = serviceTracing;
     }
 
     public static void main(String[] args) {
@@ -36,19 +39,25 @@ public class Main implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        closeIfInterrupt();
+
         int port = 2001;
 
         chatterCache.setMessageTopicName("messaging-" + port);
 
-        HazelcastConfiguration hazelcastCfg = new HazelcastConfiguration();
-        Config config = new Config();
-        hazelcastCfg.setConfig(config);
+        serviceTracing.start();
 
         registerEventBus();
 
         server.build(port);
         server.start();
+    }
 
+    public void close() {
+        System.exit(200);
+    }
+
+    private void closeIfInterrupt() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             server.stop();
             hazelcastInstanceProvider.close();
@@ -62,6 +71,9 @@ public class Main implements CommandLineRunner {
             if(bean instanceof EventHandler) {
                 EventHandler bean1 = (EventHandler) bean;
                 bean1.register();
+            }
+            else if (bean instanceof IService) {
+                serviceTracing.addService((IService) bean);
             }
         }
     }

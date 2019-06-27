@@ -3,7 +3,6 @@ package chatter.messaging;
 import chatter.messaging.exception.ServerException;
 import chatter.messaging.model.ConnectedUserModel;
 import chatter.messaging.model.User;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -15,14 +14,15 @@ import java.util.concurrent.*;
 @Service
 public class Server {
 
+    private ThreadPoolExecutor userConnectionThread = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private ConnectionManager connectionManager;
-
-    private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+    private ServiceTracing serviceTracing;
     private ServerSocket serverSocket = null;
     private boolean stopSignal;
 
-    public Server(ConnectionManager connectionManager) {
+    public Server(ConnectionManager connectionManager, ServiceTracing serviceTracing) {
         this.connectionManager = connectionManager;
+        this.serviceTracing = serviceTracing;
     }
 
     public void build(int address) {
@@ -36,8 +36,8 @@ public class Server {
     public void start() {
         stopSignal = false;
         connectionManager.start();
-        Thread thread = new Thread(this::process, "Server Main Thread");
-        thread.start();
+        Thread mainServerThread = new Thread(this::process, "Server Main Thread");
+        mainServerThread.start();
     }
 
     public void stop() {
@@ -49,10 +49,10 @@ public class Server {
         while (!stopSignal) {
             try {
                 Socket socket = serverSocket.accept();
-                Future<ConnectedUserModel> connection = threadPoolExecutor.submit(new UserRegisterTask(socket));
+                Future<ConnectedUserModel> connection = userConnectionThread.submit(new UserRegisterTask(socket));
                 connectionManager.addQueue(connection);
             } catch (IOException e) {
-                throw new ServerException("Occurred Exception while accept socket", e);
+                throw new ServerException("Occurred Exception in Server Main Thread", e);
             }
         }
     }

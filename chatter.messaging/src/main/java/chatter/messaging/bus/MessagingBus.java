@@ -1,12 +1,10 @@
 package chatter.messaging.bus;
 
-import chatter.messaging.cache.OnlineUser;
 import chatter.messaging.cache.ChatterCache;
-import chatter.messaging.event.EventHandler;
+import chatter.messaging.cache.OnlineUser;
 import chatter.messaging.event.Event;
-import chatter.messaging.exception.ChatterException;
+import chatter.messaging.event.EventHandler;
 import chatter.messaging.exception.MessageBusException;
-import chatter.messaging.exception.ServerException;
 import chatter.messaging.hazelcast.HazelcastInstanceProvider;
 import chatter.messaging.model.ConnectedUserModel;
 import chatter.messaging.model.MessageEvent;
@@ -38,7 +36,7 @@ public class MessagingBus extends EventHandler {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(client.getOutputStream());
             objectOutputStream.writeObject(messageEvent.getMessage());
         } catch (IOException exception) {
-            throw new MessageBusException(exception, "Message sender exception for model:" + connectedUserModel);
+            throw new MessageBusException("Exception while write message:" + connectedUserModel, exception);
         }
     }
 

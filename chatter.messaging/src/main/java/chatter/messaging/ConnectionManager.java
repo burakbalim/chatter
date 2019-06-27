@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.*;
 
 @Component
-public class ConnectionManager {
+public class ConnectionManager implements IService {
 
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private LinkedBlockingQueue<Future> queue = new LinkedBlockingQueue<>();
@@ -28,16 +28,23 @@ public class ConnectionManager {
         this.messageSender = messageSender;
     }
 
+    @Override
     public void start() {
         isStopSignal = false;
 
-        Thread thread = new Thread(this::process, "Connection-Manager Main Thread");
-        thread.start();
+        Thread connectionMainThread = new Thread(this::process, "Connection-Manager Main Thread");
+        connectionMainThread.start();
     }
 
+    @Override
     public void stop() {
         isStopSignal = true;
         threadPoolExecutor.shutdown();
+    }
+
+    @Override
+    public String getName() {
+        return "Connection Manager";
     }
 
     private void process() {
@@ -64,7 +71,11 @@ public class ConnectionManager {
         }
     }
 
-    public void addQueue(Future connectedUserModel) {
+    public void addQueue(Future<ConnectedUserModel> connectedUserModel) {
         queue.add(connectedUserModel);
+    }
+
+    public ServiceState state() {
+        return !isStopSignal ? ServiceState.RUNNNING : ServiceState.STOPPED;
     }
 }
