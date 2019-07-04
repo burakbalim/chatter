@@ -9,9 +9,12 @@ import chatter.messaging.model.UserEventTopic;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.*;
+import java.util.logging.Logger;
 
 @Component
 public class ConnectionManager implements IService {
+
+    private Logger logger  = Logger.getLogger(ConnectionManager.class.getName());
 
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private LinkedBlockingQueue<Future> queue = new LinkedBlockingQueue<>();
