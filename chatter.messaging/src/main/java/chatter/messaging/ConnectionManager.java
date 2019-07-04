@@ -57,8 +57,7 @@ public class ConnectionManager implements IService {
 
                 if (future != null && future.isDone()) {
                     ConnectedUserModel connection = (ConnectedUserModel) future.get();
-                    Long id = connection.getUser().getId();
-                    cacheUpdate(connection, id);
+                    cacheUpdate(connection, connection.getUser().getId());
                     threadPoolExecutor.submit(new WorkerTask(connection, messageSender, onlineUser, distributionCache));
                 } else {
                     queue.add(future);
