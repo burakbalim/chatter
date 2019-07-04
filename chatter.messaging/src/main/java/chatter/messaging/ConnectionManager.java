@@ -10,11 +10,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.*;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 @Component
 public class ConnectionManager implements IService {
 
-    private Logger logger  = Logger.getLogger(ConnectionManager.class.getName());
+    private Logger logger = Logger.getLogger(ConnectionManager.class.getName());
 
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private LinkedBlockingQueue<Future> queue = new LinkedBlockingQueue<>();
@@ -53,23 +54,30 @@ public class ConnectionManager implements IService {
     private void process() {
         while (!isStopSignal) {
             Future future = queue.poll();
-            try {
+            executeFuture(future);
+        }
+    }
 
-                if (future != null && future.isDone()) {
-                    ConnectedUserModel connection = (ConnectedUserModel) future.get();
-                    cacheUpdate(connection, connection.getUser().getId());
-                    threadPoolExecutor.submit(new WorkerTask(connection, messageSender, onlineUser, distributionCache));
-                } else {
-                    queue.add(future);
-                }
-
-            } catch (InterruptedException e) {
-                isStopSignal = true;
-                Thread.currentThread().interrupt();
-                throw new ConnectionManagerException("Occurred exception while user operation", e);
-            } catch (ExecutionException e) {
-                //TODO log
+    private void executeFuture(Future future) {
+        try {
+            if (future == null) {
+                return;
             }
+
+            if (future.isDone()) {
+                ConnectedUserModel connection = (ConnectedUserModel) future.get();
+                cacheUpdate(connection, connection.getUser().getId());
+                threadPoolExecutor.submit(new WorkerTask(connection, messageSender, onlineUser, distributionCache));
+            } else {
+                queue.add(future);
+            }
+
+        } catch (InterruptedException e) {
+            isStopSignal = true;
+            Thread.currentThread().interrupt();
+            throw new ConnectionManagerException("Occurred exception while user operation", e);
+        }  catch (ExecutionException e) {
+            logger.log(Level.WARNING, "Connection Manager execution error. Exception: {0}", e);
         }
     }
 
