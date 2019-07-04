@@ -5,7 +5,7 @@ import chatter.messaging.cache.DistributionCache;
 import chatter.messaging.cache.OnlineUser;
 import chatter.messaging.exception.ConnectionManagerException;
 import chatter.messaging.model.ConnectedUserModel;
-import chatter.messaging.model.MessageCache;
+import chatter.messaging.model.UserEventTopic;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.*;
@@ -56,7 +56,7 @@ public class ConnectionManager implements IService {
                         ConnectedUserModel connection = (ConnectedUserModel) future.get();
                         Long id = connection.getUser().getId();
                         onlineUser.add(id, connection);
-                        distributionCache.add(new MessageCache(chatterCache.getMessageTopicName(), id));
+                        distributionCache.add(new UserEventTopic(chatterCache.getMessageTopicName(), id));
                         threadPoolExecutor.submit(new WorkerTask(connection, messageSender, onlineUser, distributionCache));
                     } else {
                         queue.add(future);

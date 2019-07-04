@@ -3,12 +3,12 @@ package chatter.messaging.model;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class MessageCache implements Serializable {
+public class UserEventTopic implements Serializable {
 
     private String eventTopic;
     private Long userId;
 
-    public MessageCache(String eventTopic, Long userId) {
+    public UserEventTopic(String eventTopic, Long userId) {
         this.eventTopic = eventTopic;
         this.userId = userId;
     }
@@ -33,7 +33,7 @@ public class MessageCache implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MessageCache that = (MessageCache) o;
+        UserEventTopic that = (UserEventTopic) o;
         return Objects.equals(eventTopic, that.eventTopic) &&
                 Objects.equals(userId, that.userId);
     }
