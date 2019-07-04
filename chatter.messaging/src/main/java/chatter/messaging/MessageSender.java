@@ -25,21 +25,21 @@ public class MessageSender {
         String message = communicationModel.getMessage();
 
         communicationModel.getUserIds().stream().map(userId ->
-                distributionCache.get(userId)).forEach(userEventTopicCache -> writeMessage(userEventTopicCache, message));
+                distributionCache.get(userId)).forEach(userEventTopic -> writeMessage(userEventTopic, message));
 
         writeMessage(distributionCache.get(communicationModel.getSenderUser()), message);
     }
 
-    private void writeMessage(UserEventTopic connectedUserModel, String message) {
-        event.fire(getEvent(connectedUserModel, message));
+    private void writeMessage(UserEventTopic userEventTopic, String message) {
+        event.fire(getEvent(userEventTopic, message));
     }
 
-    private Event getEvent(UserEventTopic userEventTopicCache, String message) {
+    private Event getEvent(UserEventTopic userEventTopicModel, String message) {
         MessageEvent eventPayload = new MessageEvent();
-        eventPayload.setUserId(userEventTopicCache.getUserId());
+        eventPayload.setUserId(userEventTopicModel.getUserId());
         eventPayload.setMessage(message);
         Event<MessageEvent> eventModel = new Event<>();
-        eventModel.setTopic(userEventTopicCache.getEventTopic());
+        eventModel.setTopic(userEventTopicModel.getEventTopic());
         eventModel.setEventPayload(eventPayload);
         eventModel.setEventOwner("MessageSender");
         eventModel.setEventId(UUID.randomUUID().toString());
