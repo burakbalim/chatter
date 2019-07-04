@@ -47,7 +47,7 @@ public class Main implements CommandLineRunner {
 
         serviceTracing.start();
 
-        registerEventBus();
+        registerForEmployeeBean();
 
         server.build(port);
         server.start();
@@ -64,13 +64,13 @@ public class Main implements CommandLineRunner {
         }));
     }
 
-    private void registerEventBus() {
+    private void registerForEmployeeBean() {
         String[] beanDefinitionNames = appContext.getBeanDefinitionNames();
         for(String item : beanDefinitionNames) {
             Object bean = appContext.getBean(item);
             if(bean instanceof EventHandler) {
-                EventHandler bean1 = (EventHandler) bean;
-                bean1.register();
+                EventHandler eventHandler = (EventHandler) bean;
+                eventHandler.register();
             }
             else if (bean instanceof IService) {
                 serviceTracing.addService((IService) bean);

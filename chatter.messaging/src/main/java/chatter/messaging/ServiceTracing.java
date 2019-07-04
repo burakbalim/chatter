@@ -13,7 +13,7 @@ import java.util.logging.Level;
 @Component
 public class ServiceTracing {
 
-    private Logger logger = Logger.getLogger(ServiceTracing.class.getName());
+    private static Logger logger = Logger.getLogger(ServiceTracing.class.getName());
 
     private List<IService> applicationMainService = new ArrayList<>();
 
@@ -27,21 +27,23 @@ public class ServiceTracing {
         process();
     }
 
+    public void stop() {
+        scheduledExecutorService.shutdown();
+    }
+
     private void process() {
-        scheduledExecutorService.scheduleAtFixedRate(checkApplicationService(), 20, 20000, TimeUnit.SECONDS);
+        scheduledExecutorService.scheduleAtFixedRate(checkApplicationService(), 20, 20, TimeUnit.MINUTES);
     }
 
     private Runnable checkApplicationService() {
-        return () -> {
-            applicationMainService.forEach(service -> {
-                if (service.state().equals(ServiceState.STOPPED)) {
-                    logger.log(Level.INFO, "Service is not running. Trying to start. Service: {0}", service.getName());
-                    service.start();
-                }
-                else {
-                    logger.log(Level.SEVERE, "Service is running. Service: {0}", service.getName());
-                }
-            });
-        };
+        return () -> applicationMainService.forEach(service -> {
+            if (service.state().equals(ServiceState.STOPPED)) {
+                logger.log(Level.INFO, "Service is not running. Trying to start. Service: {0}", service.getName());
+                service.start();
+            }
+            else {
+                logger.log(Level.INFO, "Service is running. Service: {0}", service.getName());
+            }
+        });
     }
 }
