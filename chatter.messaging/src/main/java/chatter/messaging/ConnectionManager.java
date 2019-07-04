@@ -1,6 +1,6 @@
 package chatter.messaging;
 
-import chatter.messaging.cache.ChatterCache;
+import chatter.messaging.cache.ChatterConfCache;
 import chatter.messaging.cache.DistributionCache;
 import chatter.messaging.cache.OnlineUser;
 import chatter.messaging.exception.ConnectionManagerException;
@@ -16,14 +16,14 @@ public class ConnectionManager implements IService {
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private LinkedBlockingQueue<Future> queue = new LinkedBlockingQueue<>();
     private DistributionCache distributionCache;
-    private ChatterCache chatterCache;
+    private ChatterConfCache chatterConfCache;
     private OnlineUser onlineUser;
     private MessageSender messageSender;
     private boolean isStopSignal;
 
-    public ConnectionManager(OnlineUser onlineUser, ChatterCache chatterCache, DistributionCache distributionCache, MessageSender messageSender) {
+    public ConnectionManager(OnlineUser onlineUser, ChatterConfCache chatterConfCache, DistributionCache distributionCache, MessageSender messageSender) {
         this.onlineUser = onlineUser;
-        this.chatterCache = chatterCache;
+        this.chatterConfCache = chatterConfCache;
         this.distributionCache = distributionCache;
         this.messageSender = messageSender;
     }
@@ -51,24 +51,29 @@ public class ConnectionManager implements IService {
         while (!isStopSignal) {
             Future future = queue.poll();
             try {
-                if (future != null) {
-                    if (future.isDone()) {
-                        ConnectedUserModel connection = (ConnectedUserModel) future.get();
-                        Long id = connection.getUser().getId();
-                        onlineUser.add(id, connection);
-                        distributionCache.add(new UserEventTopic(chatterCache.getMessageTopicName(), id));
-                        threadPoolExecutor.submit(new WorkerTask(connection, messageSender, onlineUser, distributionCache));
-                    } else {
-                        queue.add(future);
-                    }
+
+                if (future != null && future.isDone()) {
+                    ConnectedUserModel connection = (ConnectedUserModel) future.get();
+                    Long id = connection.getUser().getId();
+                    cacheUpdate(connection, id);
+                    threadPoolExecutor.submit(new WorkerTask(connection, messageSender, onlineUser, distributionCache));
+                } else {
+                    queue.add(future);
                 }
+
             } catch (InterruptedException e) {
+                isStopSignal = true;
                 Thread.currentThread().interrupt();
                 throw new ConnectionManagerException("Occurred exception while user operation", e);
             } catch (ExecutionException e) {
-                //log
+                //TODO log
             }
         }
+    }
+
+    private void cacheUpdate(ConnectedUserModel connection, Long id) {
+        onlineUser.add(id, connection);
+        distributionCache.add(new UserEventTopic(chatterConfCache.getMessageTopicName(), id));
     }
 
     public void addQueue(Future<ConnectedUserModel> connectedUserModel) {

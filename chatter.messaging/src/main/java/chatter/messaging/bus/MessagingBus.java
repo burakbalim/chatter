@@ -1,6 +1,6 @@
 package chatter.messaging.bus;
 
-import chatter.messaging.cache.ChatterCache;
+import chatter.messaging.cache.ChatterConfCache;
 import chatter.messaging.cache.OnlineUser;
 import chatter.messaging.event.Event;
 import chatter.messaging.event.EventHandler;
@@ -18,12 +18,12 @@ import java.net.Socket;
 public class MessagingBus extends EventHandler {
 
     private OnlineUser onlineUser;
-    private ChatterCache chatterCache;
+    private ChatterConfCache chatterConfCache;
 
-    public MessagingBus(OnlineUser onlineUser, ChatterCache chatterCache, HazelcastInstanceProvider hazelcastInstanceProvider) {
+    public MessagingBus(OnlineUser onlineUser, ChatterConfCache chatterConfCache, HazelcastInstanceProvider hazelcastInstanceProvider) {
         super(hazelcastInstanceProvider);
         this.onlineUser = onlineUser;
-        this.chatterCache = chatterCache;
+        this.chatterConfCache = chatterConfCache;
     }
 
     @Override
@@ -42,6 +42,6 @@ public class MessagingBus extends EventHandler {
 
     @Override
     public void register() {
-        super.onRegister(chatterCache.getMessageTopicName());
+        super.onRegister(chatterConfCache.getMessageTopicName());
     }
 }

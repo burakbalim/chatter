@@ -3,13 +3,9 @@ package chatter.messaging.cache;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ChatterCache {
+public class ChatterConfCache {
 
     private String messageTopicName;
-
-    public ChatterCache() {
-
-    }
 
     public String getMessageTopicName() {
         return messageTopicName;

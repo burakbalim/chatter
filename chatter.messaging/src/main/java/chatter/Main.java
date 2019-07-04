@@ -3,7 +3,7 @@ package chatter;
 import chatter.messaging.IService;
 import chatter.messaging.Server;
 import chatter.messaging.ServiceTracing;
-import chatter.messaging.cache.ChatterCache;
+import chatter.messaging.cache.ChatterConfCache;
 import chatter.messaging.event.EventHandler;
 import chatter.messaging.hazelcast.HazelcastInstanceProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +19,16 @@ public class Main implements CommandLineRunner {
 
     private ServiceTracing serviceTracing;
 
-    private ChatterCache chatterCache;
+    private ChatterConfCache chatterConfCache;
 
     private HazelcastInstanceProvider hazelcastInstanceProvider;
 
     @Autowired
     private ApplicationContext appContext;
 
-    public Main(Server server, ServiceTracing serviceTracing, ChatterCache chatterCache, HazelcastInstanceProvider hazelcastInstanceProvider) {
+    public Main(Server server, ServiceTracing serviceTracing, ChatterConfCache chatterConfCache, HazelcastInstanceProvider hazelcastInstanceProvider) {
         this.server = server;
-        this.chatterCache = chatterCache;
+        this.chatterConfCache = chatterConfCache;
         this.hazelcastInstanceProvider = hazelcastInstanceProvider;
         this.serviceTracing = serviceTracing;
     }
@@ -43,7 +43,7 @@ public class Main implements CommandLineRunner {
 
         int port = 2001;
 
-        chatterCache.setMessageTopicName("messaging-" + port);
+        chatterConfCache.setMessageTopicName("messaging-" + port);
 
         serviceTracing.start();
 
