@@ -1,5 +1,7 @@
 package chatter.messaging.exception;
 
+import java.text.MessageFormat;
+
 public class ChatterException extends Exception {
 
     //private ChatterCode chatterCode;
@@ -8,6 +10,11 @@ public class ChatterException extends Exception {
 
     public ChatterException(String message, Exception innerException) {
         this.message = message;
+        this.innerException = innerException;
+    }
+
+    public ChatterException(String message, Exception innerException, Object... param) {
+        this.message = MessageFormat.format(message, param);
         this.innerException = innerException;
     }
 

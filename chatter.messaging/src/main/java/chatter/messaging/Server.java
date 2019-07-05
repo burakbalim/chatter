@@ -65,7 +65,7 @@ public class Server {
         }
 
         @Override
-        public ConnectedUserModel call() throws Exception {
+        public ConnectedUserModel call() throws IOException, ClassNotFoundException {
             ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
             User user = (User) objectInputStream.readObject();
             ConnectedUserModel connectedUserModel = new ConnectedUserModel();

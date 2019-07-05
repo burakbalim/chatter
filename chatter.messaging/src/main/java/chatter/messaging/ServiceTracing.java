@@ -15,12 +15,12 @@ public class ServiceTracing {
 
     private static Logger logger = Logger.getLogger(ServiceTracing.class.getName());
 
-    private List<IService> applicationMainService = new ArrayList<>();
+    private List<IService> serviceList = new ArrayList<>();
 
     private ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
     public void addService(IService iService) {
-        this.applicationMainService.add(iService);
+        this.serviceList.add(iService);
     }
 
     public void start() {
@@ -36,13 +36,13 @@ public class ServiceTracing {
     }
 
     private Runnable checkApplicationService() {
-        return () -> applicationMainService.forEach(service -> {
+        return () -> serviceList.forEach(service -> {
             if (service.state().equals(ServiceState.STOPPED)) {
                 logger.log(Level.INFO, "Service is not running. Trying to start. Service: {0}", service.getName());
                 service.start();
             }
             else {
-                logger.log(Level.INFO, "Service is running. Service: {0}", service.getName());
+                logger.log(Level.SEVERE, "Service is running. Service: {0}", service.getName());
             }
         });
     }
