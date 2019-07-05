@@ -1,6 +1,8 @@
 package chatter.messaging.exception;
 
-public class ServerException extends OrchestractionException {
+import chatter.common.exception.OrchestrationException;
+
+public class ServerException extends OrchestrationException {
 
     public ServerException(String message) {
         super(message);

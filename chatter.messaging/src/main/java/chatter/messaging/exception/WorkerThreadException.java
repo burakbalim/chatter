@@ -1,6 +1,8 @@
 package chatter.messaging.exception;
 
-public class WorkerThreadException extends OrchestractionException {
+import chatter.common.exception.OrchestrationException;
+
+public class WorkerThreadException extends OrchestrationException {
 
     public WorkerThreadException(String message) {
         super(message);

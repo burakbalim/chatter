@@ -1,15 +1,15 @@
-package chatter.messaging.exception;
+package chatter.common.exception;
 
-public class OrchestractionException extends RuntimeException {
+public class OrchestrationException extends RuntimeException {
 
     private Exception innerException;
     private String message;
 
-    public OrchestractionException(String message) {
+    public OrchestrationException(String message) {
         super(message);
     }
 
-    public OrchestractionException(String message, Exception innerException) {
+    public OrchestrationException(String message, Exception innerException) {
         super(message);
         this.message = message;
         this.innerException = innerException;

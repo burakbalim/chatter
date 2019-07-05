@@ -1,4 +1,4 @@
-package chatter.messaging.exception;
+package chatter.common.exception;
 
 import java.text.MessageFormat;
 
@@ -27,7 +27,6 @@ public class ChatterException extends Exception {
         if(innerException != null) {
             return message + " Inner Exception " + innerException;
         }
-
         return message;
     }
 }

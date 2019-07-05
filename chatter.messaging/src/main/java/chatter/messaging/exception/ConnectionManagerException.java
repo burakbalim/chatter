@@ -1,6 +1,8 @@
 package chatter.messaging.exception;
 
-public class ConnectionManagerException extends OrchestractionException {
+import chatter.common.exception.OrchestrationException;
+
+public class ConnectionManagerException extends OrchestrationException {
 
     public ConnectionManagerException(String message) {
         super(message);

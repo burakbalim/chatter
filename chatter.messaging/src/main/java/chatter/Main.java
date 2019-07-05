@@ -41,7 +41,7 @@ public class Main implements CommandLineRunner {
     public void run(String... args) {
         closeIfInterrupt();
 
-        int port = 2001;
+        int port = 2002;
 
         chatterConfCache.setMessageTopicName("messaging-" + port);
 
