@@ -17,7 +17,7 @@ public class ConnectionManager implements IService {
 
     private Logger logger = Logger.getLogger(ConnectionManager.class.getName());
 
-    private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+    private ThreadPoolExecutor workerTaskExecutor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private LinkedBlockingQueue<Future> queue = new LinkedBlockingQueue<>();
     private DistributionCache distributionCache;
     private ChatterConfCache chatterConfCache;
@@ -43,7 +43,7 @@ public class ConnectionManager implements IService {
     @Override
     public void stop() {
         isStopSignal = true;
-        threadPoolExecutor.shutdown();
+        workerTaskExecutor.shutdownNow();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ConnectionManager implements IService {
             if (future.isDone()) {
                 ConnectedUserModel connection = (ConnectedUserModel) future.get();
                 cacheUpdate(connection);
-                threadPoolExecutor.submit(new WorkerTask(connection, messageSender, onlineUser, distributionCache));
+                workerTaskExecutor.submit(new WorkerTask(connection, messageSender, onlineUser, distributionCache));
             } else {
                 queue.add(future);
             }

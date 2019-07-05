@@ -26,17 +26,15 @@ public class WorkerTask implements Runnable {
 
     @Override
     public void run() {
-        try{
+        try {
             Socket socket = connectedUserModel.getClient();
             while (socket.isConnected()) {
                 ObjectInputStream stream = new ObjectInputStream(socket.getInputStream());
                 messageSender.send((CommunicationModel) stream.readObject());
             }
-
         } catch (IOException | ClassNotFoundException e) {
             throw new WorkerThreadException("Occurred Exception while sending message", e);
-        }
-        finally {
+        } finally {
             Long userId = connectedUserModel.getUser().getId();
             onlineUser.pop(userId);
             distributionCache.pop(userId);
