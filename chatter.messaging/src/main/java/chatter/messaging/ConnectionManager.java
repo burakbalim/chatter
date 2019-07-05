@@ -91,6 +91,6 @@ public class ConnectionManager implements IService {
     }
 
     public ServiceState state() {
-        return !isStopSignal ? ServiceState.RUNNNING : ServiceState.STOPPED;
+        return !isStopSignal ? ServiceState.RUNNING : ServiceState.STOPPED;
     }
 }
