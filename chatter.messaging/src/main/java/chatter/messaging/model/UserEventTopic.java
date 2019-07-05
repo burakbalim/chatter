@@ -5,10 +5,10 @@ import java.util.Objects;
 
 public class UserEventTopic implements Serializable {
 
-    private String eventTopic;
     private Long userId;
+    private String eventTopic;
 
-    public UserEventTopic(String eventTopic, Long userId) {
+    public UserEventTopic(Long userId, String eventTopic) {
         this.eventTopic = eventTopic;
         this.userId = userId;
     }

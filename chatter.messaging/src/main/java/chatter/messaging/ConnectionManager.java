@@ -66,7 +66,7 @@ public class ConnectionManager implements IService {
 
             if (future.isDone()) {
                 ConnectedUserModel connection = (ConnectedUserModel) future.get();
-                cacheUpdate(connection, connection.getUser().getId());
+                cacheUpdate(connection);
                 threadPoolExecutor.submit(new WorkerTask(connection, messageSender, onlineUser, distributionCache));
             } else {
                 queue.add(future);
@@ -81,9 +81,10 @@ public class ConnectionManager implements IService {
         }
     }
 
-    private void cacheUpdate(ConnectedUserModel connection, Long id) {
+    private void cacheUpdate(ConnectedUserModel connection) {
+        long id = connection.getUser().getId();
         onlineUser.add(id, connection);
-        distributionCache.add(new UserEventTopic(chatterConfCache.getMessageTopicName(), id));
+        distributionCache.add(id, new UserEventTopic(id, chatterConfCache.getMessageTopicName()));
     }
 
     public void addQueue(Future<ConnectedUserModel> connectedUserModel) {

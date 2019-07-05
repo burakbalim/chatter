@@ -20,8 +20,8 @@ public class DistributionCache implements Serializable {
         return messageCacheMap.get(id);
     }
 
-    public synchronized void add(UserEventTopic userEventTopic) {
-        messageCacheMap.put(userEventTopic.getUserId(), userEventTopic);
+    public synchronized void add(long id, UserEventTopic userEventTopic) {
+        messageCacheMap.put(id, userEventTopic);
     }
 
     public synchronized void pop(long id) {
