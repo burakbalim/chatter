@@ -18,7 +18,7 @@ public class ChatterUtil {
             return readToString(fileInputStream);
         }
         catch (IOException e) {
-            throw new ChatterException("Exception while read file", e);
+            throw new ChatterException("Exception while reading file", e);
         }
     }
 
