@@ -83,8 +83,8 @@ public class ConnectionManager implements IService {
 
     private void cacheUpdate(ConnectedUserModel connection) {
         long id = connection.getUser().getId();
-        onlineUser.add(id, connection);
-        distributionCache.add(id, new UserEventTopic(id, chatterConfCache.getMessageTopicName()));
+        onlineUser.put(id, connection);
+        distributionCache.put(id, new UserEventTopic(id, chatterConfCache.getMessageTopicName()));
     }
 
     public void addQueue(Future<ConnectedUserModel> connectedUserModel) {

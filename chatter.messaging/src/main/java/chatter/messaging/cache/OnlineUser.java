@@ -14,7 +14,7 @@ public class OnlineUser {
         return this.concurrentHashMap.get(id);
     }
 
-    public void add(long id, ConnectedUserModel connectedUserModel) {
+    public void put(long id, ConnectedUserModel connectedUserModel) {
         this.concurrentHashMap.put(id, connectedUserModel);
     }
 
