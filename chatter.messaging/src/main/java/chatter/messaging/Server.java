@@ -14,7 +14,7 @@ import java.util.concurrent.*;
 @Service
 public class Server {
 
-    private ThreadPoolExecutor userConnectionThread = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+    private ThreadPoolExecutor connectionExecutor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private ConnectionManager connectionManager;
     private ServerSocket serverSocket = null;
     private boolean stopSignal;
@@ -56,7 +56,7 @@ public class Server {
         while (!stopSignal) {
             try {
                 Socket socket = serverSocket.accept();
-                Future<ConnectedUserModel> connection = userConnectionThread.submit(new UserRegisterTask(socket));
+                Future<ConnectedUserModel> connection = connectionExecutor.submit(new UserRegisterTask(socket));
                 connectionManager.addQueue(connection);
             } catch (IOException e) {
                 throw new ServerException("Occurred Exception in Server Main Thread", e);
