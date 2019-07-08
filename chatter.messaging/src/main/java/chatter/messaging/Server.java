@@ -16,13 +16,11 @@ public class Server {
 
     private ThreadPoolExecutor userConnectionThread = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private ConnectionManager connectionManager;
-    private ServiceTracing serviceTracing;
     private ServerSocket serverSocket = null;
     private boolean stopSignal;
 
-    public Server(ConnectionManager connectionManager, ServiceTracing serviceTracing) {
+    public Server(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
-        this.serviceTracing = serviceTracing;
     }
 
     public void build(int address) {
@@ -46,8 +44,12 @@ public class Server {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            throw new ServerException("Occurred Exception while server closing", e);
+            throw new ServerException("Exception while server closing", e);
         }
+    }
+
+    public ServiceState state() {
+        return !stopSignal ? ServiceState.RUNNING : ServiceState.STOPPED;
     }
 
     private void process() {
