@@ -11,13 +11,11 @@ import chatter.messaging.cache.ChatterConfCache;
 import chatter.messaging.event.EventHandler;
 import chatter.messaging.hazelcast.HazelcastInstanceProvider;
 import chatter.messaging.model.ChatterConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
-import java.io.File;
 import java.util.Objects;
 
 @SpringBootApplication
@@ -31,14 +29,16 @@ public class Main implements CommandLineRunner {
 
     private HazelcastInstanceProvider hazelcastInstanceProvider;
 
-    @Autowired
     private ApplicationContext appContext;
 
-    public Main(Server server, ServiceTracing serviceTracing, ChatterConfCache chatterConfCache, HazelcastInstanceProvider hazelcastInstanceProvider) {
+    public Main(ApplicationContext appContext,
+                Server server, ServiceTracing serviceTracing,
+                ChatterConfCache chatterConfCache, HazelcastInstanceProvider hazelcastInstanceProvider) {
         this.server = server;
         this.chatterConfCache = chatterConfCache;
         this.hazelcastInstanceProvider = hazelcastInstanceProvider;
         this.serviceTracing = serviceTracing;
+        this.appContext = appContext;
     }
 
     public static void main(String[] args) {
@@ -70,10 +70,6 @@ public class Main implements CommandLineRunner {
         } catch (ChatterException e) {
             throw new OrchestrationException("Occured Excetion while reading configuration file", e);
         }
-    }
-
-    public void close() {
-        System.exit(200);
     }
 
     private void closeIfInterrupt() {
