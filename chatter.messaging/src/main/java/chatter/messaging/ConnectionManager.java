@@ -54,16 +54,14 @@ public class ConnectionManager implements IService {
     private void process() {
         while (!isStopSignal) {
             Future future = queue.poll();
-            executeFuture(future);
+            if(future != null) {
+                executeFuture(future);
+            }
         }
     }
 
     private void executeFuture(Future future) {
         try {
-            if (future == null) {
-                return;
-            }
-
             if (future.isDone()) {
                 ConnectedUserModel connection = (ConnectedUserModel) future.get();
                 cacheUpdate(connection);
