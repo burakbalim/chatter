@@ -29,10 +29,6 @@ public class WorkerTask implements Runnable {
         try {
             Socket socket = connectedUserModel.getClient();
             while (socket.isConnected()) {
-                if (checkInterrupt()) {
-                    break;
-                }
-
                 ObjectInputStream stream = new ObjectInputStream(socket.getInputStream());
                 messageSender.send((CommunicationModel) stream.readObject());
             }
@@ -43,9 +39,5 @@ public class WorkerTask implements Runnable {
             onlineUser.pop(userId);
             distributionCache.pop(userId);
         }
-    }
-
-    private boolean checkInterrupt() {
-        return Thread.currentThread().isInterrupted();
     }
 }

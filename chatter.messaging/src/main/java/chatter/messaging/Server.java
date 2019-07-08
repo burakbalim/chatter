@@ -29,7 +29,7 @@ public class Server {
         try {
             serverSocket = new ServerSocket(address);
         } catch (IOException e) {
-            throw new ServerException("Occurred exception while new serversocket ", e);
+            throw new ServerException("Occurred exception while creating server socket", e);
         }
     }
 
@@ -43,6 +43,11 @@ public class Server {
     public void stop() {
         stopSignal = true;
         connectionManager.stop();
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            throw new ServerException("Occurred Exception while server closing", e);
+        }
     }
 
     private void process() {
