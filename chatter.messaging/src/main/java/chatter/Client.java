@@ -16,16 +16,17 @@ public class Client {
     private static Scanner scanner = new Scanner(System.in);
     private static long userId;
 
-    public static void main(String[] args) {
-        Socket socket = client1();
+    public static void main(String[] args) throws IOException {
+
+        Socket socket = defineClient();
+
         new Thread(() -> {
             try {
                 while (true) {
                     ObjectInputStream outputStream = new ObjectInputStream(socket.getInputStream());
                     out.println(outputStream.readObject());
                 }
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+            } catch (IOException | ClassNotFoundException ignored) {
             }
         }).start();
 
@@ -49,12 +50,9 @@ public class Client {
 
                     outputStream.writeObject(communicationModel);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignored) {
             }
-
         }).start();
-
 
     }
 
@@ -66,24 +64,20 @@ public class Client {
         return list;
     }
 
-    private static Socket client1() {
+    private static Socket defineClient() throws IOException {
         out.println("Define client");
         userId = scanner.nextLong();
         return createClient(userId);
     }
 
-    private static Socket createClient(long id) {
-        try {
-            out.println("Define port");
-            int port = scanner.nextInt();
-            Socket socket = new Socket("localhost", port);
-            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-            outputStream.writeObject(createUser(id));
-            return socket;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    private static Socket createClient(long id) throws IOException {
+        Socket socket;
+        out.println("Define port");
+        int port = scanner.nextInt();
+        socket = new Socket("localhost", port);
+        ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+        outputStream.writeObject(createUser(id));
+        return socket;
     }
 
 
