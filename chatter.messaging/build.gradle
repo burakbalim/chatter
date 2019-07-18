@@ -26,8 +26,6 @@ jar {
 
 dependencies {
     compile 'com.hazelcast:hazelcast:3.12'
-    compile 'org.springframework.boot:spring-boot-starter:2.1.5.RELEASE'
-    compile 'org.springframework.boot:spring-boot-gradle-plugin:2.1.6.RELEASE'
 
     compile project (":chatter.common")
 

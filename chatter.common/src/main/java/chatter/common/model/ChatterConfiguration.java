@@ -1,4 +1,4 @@
-package chatter.messaging.model;
+package chatter.common.model;
 
 public class ChatterConfiguration {
 

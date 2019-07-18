@@ -3,19 +3,22 @@ package chatter;
 import chatter.common.exception.ChatterException;
 import chatter.common.exception.OrchestrationException;
 import chatter.common.util.ChatterUtil;
+import chatter.common.util.ConfigurationHelper;
 import chatter.messaging.IService;
 import chatter.messaging.Server;
 import chatter.messaging.ServiceState;
 import chatter.messaging.ServiceTracing;
 import chatter.messaging.cache.ChatterConfCache;
 import chatter.messaging.event.EventHandler;
+import chatter.messaging.exception.ServerException;
 import chatter.messaging.hazelcast.HazelcastInstanceProvider;
-import chatter.messaging.model.ChatterConfiguration;
+import chatter.common.model.ChatterConfiguration;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 @SpringBootApplication
@@ -27,16 +30,15 @@ public class Main implements CommandLineRunner {
 
     private ChatterConfCache chatterConfCache;
 
-    private HazelcastInstanceProvider hazelcastInstanceProvider;
-
     private ApplicationContext appContext;
+
+    private ConfigurationHelper configurationHelper;
 
     public Main(ApplicationContext appContext,
                 Server server, ServiceTracing serviceTracing,
-                ChatterConfCache chatterConfCache, HazelcastInstanceProvider hazelcastInstanceProvider) {
+                ChatterConfCache chatterConfCache) {
         this.server = server;
         this.chatterConfCache = chatterConfCache;
-        this.hazelcastInstanceProvider = hazelcastInstanceProvider;
         this.serviceTracing = serviceTracing;
         this.appContext = appContext;
     }
@@ -49,27 +51,13 @@ public class Main implements CommandLineRunner {
     public void run(String... args) {
         closeIfInterrupt();
 
-        ChatterConfiguration configuration = getChatterConfiguration();
-        Integer port = configuration.getPort();
-
-        chatterConfCache.setMessageTopicName("messaging-" + port);
-
-        serviceTracing.start();
+        populateConfigurationCache();
 
         registerForEmployeeBean();
 
-        server.build(port);
+        serviceTracing.start();
+        server.build(chatterConfCache.getChatterConfiguration().getPort());
         server.start();
-    }
-
-    private ChatterConfiguration getChatterConfiguration() {
-        String path = Objects.requireNonNull(getClass().getClassLoader().getResource("test")).getFile();
-        try {
-            String confPath = ChatterUtil.readFile(path);
-            return ChatterUtil.readJson(confPath, ChatterConfiguration.class);
-        } catch (ChatterException e) {
-            throw new OrchestrationException("Occured Excetion while reading configuration file", e);
-        }
     }
 
     private void closeIfInterrupt() {
@@ -77,20 +65,29 @@ public class Main implements CommandLineRunner {
             if (server.state() == ServiceState.RUNNING) {
                 server.stop();
             }
-            hazelcastInstanceProvider.close();
         }));
     }
 
     private void registerForEmployeeBean() {
         String[] beanDefinitionNames = appContext.getBeanDefinitionNames();
-        for (String item : beanDefinitionNames) {
-            Object bean = appContext.getBean(item);
+        Arrays.stream(beanDefinitionNames).map(item -> appContext.getBean(item)).forEach(bean -> {
             if (bean instanceof EventHandler) {
                 EventHandler eventHandler = (EventHandler) bean;
                 eventHandler.register();
             } else if (bean instanceof IService) {
                 serviceTracing.addService((IService) bean);
             }
+        });
+    }
+
+    private void populateConfigurationCache(String... args) {
+        ChatterConfiguration configuration;
+        try {
+            configuration = configurationHelper.getConfiguration(args);
+            chatterConfCache.setMessageTopicName("messaging-" + configuration.getPort());
+        } catch (ChatterException e) {
+            throw new ServerException("Configuration read error", e);
         }
     }
+
 }
