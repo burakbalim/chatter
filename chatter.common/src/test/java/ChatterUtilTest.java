@@ -10,7 +10,7 @@ public class ChatterUtilTest {
 
     @Test
     public void readFileTest() throws ChatterException {
-        File file = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("test")).getFile());
+        File file = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("test.json")).getFile());
         String fileStr = ChatterUtil.readFile(file.getPath());
         Assert.assertEquals("{\"port\":\"2001\"}", fileStr);
     }

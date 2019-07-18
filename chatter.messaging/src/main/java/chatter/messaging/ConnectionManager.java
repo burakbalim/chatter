@@ -64,7 +64,7 @@ public class ConnectionManager implements IService {
         try {
             if (future.isDone()) {
                 ConnectedUserModel connection = (ConnectedUserModel) future.get();
-                cacheUpdate(connection);
+                cachePopulate(connection);
                 workerTaskExecutor.submit(new WorkerTask(connection, messageSender, onlineUser, distributionCache));
             } else {
                 queue.add(future);
@@ -78,7 +78,7 @@ public class ConnectionManager implements IService {
         }
     }
 
-    private void cacheUpdate(ConnectedUserModel connection) {
+    private void cachePopulate(ConnectedUserModel connection) {
         long id = connection.getUser().getId();
         onlineUser.put(id, connection);
         distributionCache.put(id, new UserEventTopic(id, chatterConfCache.getMessageTopicName()));

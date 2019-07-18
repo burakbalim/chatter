@@ -36,11 +36,12 @@ public class Main implements CommandLineRunner {
 
     public Main(ApplicationContext appContext,
                 Server server, ServiceTracing serviceTracing,
-                ChatterConfCache chatterConfCache) {
+                ChatterConfCache chatterConfCache, ConfigurationHelper configurationHelper) {
         this.server = server;
         this.chatterConfCache = chatterConfCache;
         this.serviceTracing = serviceTracing;
         this.appContext = appContext;
+        this.configurationHelper = configurationHelper;
     }
 
     public static void main(String[] args) {
@@ -51,21 +52,13 @@ public class Main implements CommandLineRunner {
     public void run(String... args) {
         closeIfInterrupt();
 
-        populateConfigurationCache();
+        populateConfigurationCache(args);
 
         registerForEmployeeBean();
 
         serviceTracing.start();
         server.build(chatterConfCache.getChatterConfiguration().getPort());
         server.start();
-    }
-
-    private void closeIfInterrupt() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (server.state() == ServiceState.RUNNING) {
-                server.stop();
-            }
-        }));
     }
 
     private void registerForEmployeeBean() {
@@ -84,10 +77,20 @@ public class Main implements CommandLineRunner {
         ChatterConfiguration configuration;
         try {
             configuration = configurationHelper.getConfiguration(args);
+            chatterConfCache.setChatterConfiguration(configuration);
             chatterConfCache.setMessageTopicName("messaging-" + configuration.getPort());
         } catch (ChatterException e) {
             throw new ServerException("Configuration read error", e);
         }
+    }
+
+    private void closeIfInterrupt() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (server.state() == ServiceState.RUNNING) {
+                server.stop();
+            }
+            serviceTracing.stop();
+        }));
     }
 
 }

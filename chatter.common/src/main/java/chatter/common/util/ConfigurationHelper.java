@@ -10,15 +10,15 @@ import java.util.Optional;
 @Component
 public class ConfigurationHelper {
 
-    private static String configFile = "--configFile";
+    private static String configFilePrefix = "--configFile";
 
-    public ChatterConfiguration getConfiguration(String[] args) throws ChatterException {
+    public ChatterConfiguration getConfiguration(String... args) throws ChatterException {
 
-        Optional<String> config = Arrays.stream(args).filter(item -> item.startsWith(configFile)).findFirst();
+        Optional<String> configFilePath = Arrays.stream(args).filter(item -> item.startsWith(ConfigurationHelper.configFilePrefix)).findFirst();
 
-        if (config.isPresent()) {
-            String configFile = config.get().split(config + "=")[1];
-            String file = ChatterUtil.readFile(configFile);
+        if (configFilePath.isPresent()) {
+            String path = configFilePath.get().split(configFilePrefix + "=")[1];
+            String file = ChatterUtil.readFile(path);
             return ChatterUtil.readJson(file, ChatterConfiguration.class);
         }
 

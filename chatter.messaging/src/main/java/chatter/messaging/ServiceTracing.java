@@ -28,7 +28,7 @@ public class ServiceTracing {
     }
 
     public void stop() {
-        scheduledExecutorService.shutdown();
+        scheduledExecutorService.shutdownNow();
     }
 
     private void process() {
@@ -37,12 +37,11 @@ public class ServiceTracing {
 
     private Runnable checkApplicationService() {
         return () -> serviceList.forEach(service -> {
-            if (service.state().equals(ServiceState.STOPPED)) {
+            if (!service.state().equals(ServiceState.STOPPED)) {
+                logger.log(Level.SEVERE, "Service is running. Service: {0}", service.getName());
+            } else {
                 logger.log(Level.INFO, "Service is not running. Trying to start. Service: {0}", service.getName());
                 service.start();
-            }
-            else {
-                logger.log(Level.SEVERE, "Service is running. Service: {0}", service.getName());
             }
         });
     }
