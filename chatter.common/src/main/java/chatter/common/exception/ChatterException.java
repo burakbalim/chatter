@@ -4,11 +4,11 @@ import java.text.MessageFormat;
 
 public class ChatterException extends Exception {
 
-    //private ChatterCode chatterCode;
     private Exception innerException;
     private String message;
 
     public ChatterException(String message, Exception innerException) {
+        super(message);
         this.message = message;
         this.innerException = innerException;
     }

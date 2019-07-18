@@ -14,15 +14,13 @@ import java.util.concurrent.*;
 @Service
 public class Server {
 
-    private ThreadPoolExecutor userConnectionThread = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+    private ThreadPoolExecutor connectionExecutor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private ConnectionManager connectionManager;
-    private ServiceTracing serviceTracing;
     private ServerSocket serverSocket = null;
     private boolean stopSignal;
 
-    public Server(ConnectionManager connectionManager, ServiceTracing serviceTracing) {
+    public Server(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
-        this.serviceTracing = serviceTracing;
     }
 
     public void build(int address) {
@@ -46,15 +44,19 @@ public class Server {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            throw new ServerException("Occurred Exception while server closing", e);
+            throw new ServerException("Exception while server closing", e);
         }
+    }
+
+    public ServiceState state() {
+        return !stopSignal ? ServiceState.RUNNING : ServiceState.STOPPED;
     }
 
     private void process() {
         while (!stopSignal) {
             try {
                 Socket socket = serverSocket.accept();
-                Future<ConnectedUserModel> connection = userConnectionThread.submit(new UserRegisterTask(socket));
+                Future<ConnectedUserModel> connection = connectionExecutor.submit(new UserRegisterTask(socket));
                 connectionManager.addQueue(connection);
             } catch (IOException e) {
                 throw new ServerException("Occurred Exception in Server Main Thread", e);
