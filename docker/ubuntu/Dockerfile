@@ -9,3 +9,11 @@ RUN apt-get update && \
     apt-get install -y oracle-java8-installer && \
     apt-get clean
 
+
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+
+RUN export JAVA_HOME
+
+WORKDIR opt
+
+RUN mkdir chatter

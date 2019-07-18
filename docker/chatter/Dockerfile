@@ -1,10 +1,12 @@
 FROM chatter/ubuntu_spec
 
-RUN mkdir chatter
+ARG CHATTER_HOME="/opt/chatter"
 
-COPY deploy chatter
+COPY deploy ${CHATTER_HOME}
 
-COPY chatter-service.sh chatter
+COPY chatter-service.sh ${CHATTER_HOME}
 
-CMD ["/chatter/chatter-service.sh"]
+WORKDIR ${CHATTER_HOME}
+
+CMD ["./chatter-service.sh", "start"]
 

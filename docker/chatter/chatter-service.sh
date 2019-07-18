@@ -1,7 +1,7 @@
 #!/bin/sh
 SERVICE_NAME=chatter
-PATH_TO_JAR=deploy/chatter.messaging-1.0-SNAPSHOT.jar 
-PARAM=--configFile=file://deploy/config/chatter.json
+PATH_TO_JAR=chatter.messaging-1.0-SNAPSHOT.jar 
+PARAM=--configFile=file://config/chatter.json
 PID_PATH_NAME=/tmp/chatter-pid
 
 case $1 in
