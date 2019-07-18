@@ -12,6 +12,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
+import java.util.Arrays;
+
 @SpringBootApplication
 public class Main implements CommandLineRunner {
 
@@ -34,7 +36,20 @@ public class Main implements CommandLineRunner {
     }
 
     public static void main(String[] args) {
+
+        getConfiguration(args);
+
         SpringApplication.run(Main.class, args);
+    }
+
+    private static void getConfiguration(String[] args) {
+        for (String item : args) {
+            String prefix = "--config";
+            if(item.startsWith(prefix)) {
+                String configFile = item.split(prefix + "=")[1];
+                System.out.println(configFile);
+            }
+        }
     }
 
     @Override

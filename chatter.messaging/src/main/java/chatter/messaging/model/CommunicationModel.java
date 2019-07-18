@@ -6,8 +6,8 @@ import java.util.List;
 public class CommunicationModel implements Serializable {
 
     private String message;
-    private List<Long> userIds;
-    private Long senderUser;
+    private List<Long> sentUserIds;
+    private Long senderUserId;
 
     public String getMessage() {
         return message;
@@ -17,19 +17,19 @@ public class CommunicationModel implements Serializable {
         this.message = message;
     }
 
-    public List<Long> getUserIds() {
-        return userIds;
+    public List<Long> getSentUserIds() {
+        return sentUserIds;
     }
 
-    public void setUserIds(List<Long> userIds) {
-        this.userIds = userIds;
+    public void setSentUserIds(List<Long> sentUserIds) {
+        this.sentUserIds = sentUserIds;
     }
 
-    public Long getSenderUser() {
-        return senderUser;
+    public Long getSenderUserId() {
+        return senderUserId;
     }
 
-    public void setSenderUser(Long senderUser) {
-        this.senderUser = senderUser;
+    public void setSenderUserId(Long senderUserId) {
+        this.senderUserId = senderUserId;
     }
 }

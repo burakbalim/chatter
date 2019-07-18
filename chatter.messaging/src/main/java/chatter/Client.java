@@ -41,11 +41,11 @@ public class Client {
 
                     CommunicationModel communicationModel = new CommunicationModel();
                     communicationModel.setMessage(message);
-                    communicationModel.setSenderUser(userId);
+                    communicationModel.setSenderUserId(userId);
 
                     out.print("Send for user: ");
                     String userIds = scanner.next();
-                    communicationModel.setUserIds(getUserId(userIds.split(",")));
+                    communicationModel.setSentUserIds(getUserId(userIds.split(",")));
 
                     outputStream.writeObject(communicationModel);
                 }

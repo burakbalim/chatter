@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'org.springframework.boot' version '1.5.2.RELEASE'
+
 }
 
 group 'chatter'
@@ -11,9 +13,21 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    manifest {
+        attributes "Main-Class": "chatter.Main"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+
 dependencies {
     compile 'com.hazelcast:hazelcast:3.12'
     compile 'org.springframework.boot:spring-boot-starter:2.1.5.RELEASE'
+    compile 'org.springframework.boot:spring-boot-gradle-plugin:2.1.6.RELEASE'
 
     compile project (":chatter.common")
 

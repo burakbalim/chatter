@@ -69,7 +69,6 @@ public class ConnectionManager implements IService {
             } else {
                 queue.add(future);
             }
-
         } catch (InterruptedException e) {
             isStopSignal = true;
             Thread.currentThread().interrupt();

@@ -22,9 +22,9 @@ public class ChatterUtil {
         }
     }
 
-    public static String readToString(InputStream in) throws IOException {
+    public static String readToString(InputStream stream) throws IOException {
         StringBuilder lines = new StringBuilder();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, Charset.defaultCharset()));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream, Charset.defaultCharset()));
         String line;
         while ((line = bufferedReader.readLine()) != null) {
             lines.append(line);
@@ -37,6 +37,7 @@ public class ChatterUtil {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len;
+
         while ((len = in.read(buffer)) != -1) {
             os.write(buffer, 0, len);
             os.flush();
@@ -48,5 +49,4 @@ public class ChatterUtil {
     public static <T> T readJson(String value, Class<T> clazz) {
         return new Gson().fromJson(value, clazz);
     }
-
 }

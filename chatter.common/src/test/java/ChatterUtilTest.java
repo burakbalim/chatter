@@ -11,8 +11,8 @@ public class ChatterUtilTest {
     @Test
     public void readFileTest() throws ChatterException {
         File file = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("test")).getFile());
-        String s = ChatterUtil.readFile(file.getPath());
-        Assert.assertEquals("{\"port\":\"2001\"}", s);
+        String fileStr = ChatterUtil.readFile(file.getPath());
+        Assert.assertEquals("{\"port\":\"2001\"}", fileStr);
     }
 
     @Test(expected = ChatterException.class)
