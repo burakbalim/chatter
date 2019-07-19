@@ -8,5 +8,5 @@ COPY chatter-service.sh ${CHATTER_HOME}
 
 WORKDIR ${CHATTER_HOME}
 
-CMD ["./chatter-service.sh", "start"]
+CMD ["/opt/chatter/chatter-service.sh", "start"]
 
