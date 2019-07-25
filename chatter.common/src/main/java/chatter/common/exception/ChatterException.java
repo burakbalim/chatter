@@ -16,7 +16,7 @@ public class ChatterException extends Exception {
     public ChatterException(String message, Exception innerException, Object... param) {
         this.message = MessageFormat.format(message, param);
         this.innerException = innerException;
-        //TEST
+        //TEST - burak - test - 1-2-3
     }
 
     public ChatterException(String message) {
