@@ -32,7 +32,7 @@ public class ServiceTracing {
     }
 
     private void process() {
-        scheduledExecutorService.scheduleAtFixedRate(checkApplicationService(), 20, 20, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(checkApplicationService(), 20, 2, TimeUnit.MINUTES);
     }
 
     private Runnable checkApplicationService() {

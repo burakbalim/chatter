@@ -14,11 +14,11 @@ public abstract class EventHandler implements MessageListener<Object> {
 
     private ExecutorService executorService = new ThreadPoolExecutor(10, 1000, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private static Logger logger = Logger.getLogger(EventHandler.class.getName());
+    private HazelcastInstanceProvider hazelcastInstanceProvider;
 
     protected abstract void handle(Event event) throws MessageBusException;
-    public abstract void register();
 
-    private HazelcastInstanceProvider hazelcastInstanceProvider;
+    public abstract void register();
 
     public EventHandler(HazelcastInstanceProvider hazelcastInstanceProvider) {
         this.hazelcastInstanceProvider = hazelcastInstanceProvider;

@@ -1,5 +1,6 @@
 package chatter.messaging;
 
+import chatter.common.exception.ChatterException;
 import chatter.messaging.exception.ServerException;
 import chatter.messaging.model.ConnectedUserModel;
 import chatter.messaging.model.User;
@@ -72,12 +73,18 @@ public class Server {
         }
 
         @Override
-        public ConnectedUserModel call() throws IOException, ClassNotFoundException {
-            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-            User user = (User) objectInputStream.readObject();
-            ConnectedUserModel connectedUserModel = new ConnectedUserModel();
-            connectedUserModel.setUser(user);
-            connectedUserModel.setClient(socket);
+        public ConnectedUserModel call() throws ChatterException {
+            ConnectedUserModel connectedUserModel;
+            try {
+                ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+                User user = (User) objectInputStream.readObject();
+                connectedUserModel = new ConnectedUserModel();
+                connectedUserModel.setUser(user);
+                connectedUserModel.setClient(socket);
+            }
+            catch (IOException | ClassNotFoundException e) {
+                throw new ChatterException("Occurred Connection Exception ", e);
+            }
             return connectedUserModel;
         }
     }
