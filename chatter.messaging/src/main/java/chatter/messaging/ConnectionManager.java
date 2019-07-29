@@ -84,7 +84,7 @@ public class ConnectionManager implements IService {
         distributionCache.put(id, new UserEventTopic(id, chatterConfCache.getMessageTopicName()));
     }
 
-    public void addQueue(Future<ConnectedUserModel> connectedUserModel) {
+    void addQueue(Future<ConnectedUserModel> connectedUserModel) {
         queue.add(connectedUserModel);
     }
 

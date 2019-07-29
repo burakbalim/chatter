@@ -1,8 +1,7 @@
 package chatter;
 
 import chatter.common.exception.ChatterException;
-import chatter.common.exception.OrchestrationException;
-import chatter.common.util.ChatterUtil;
+import chatter.common.model.ChatterConfiguration;
 import chatter.common.util.ConfigurationHelper;
 import chatter.messaging.IService;
 import chatter.messaging.Server;
@@ -11,15 +10,12 @@ import chatter.messaging.ServiceTracing;
 import chatter.messaging.cache.ChatterConfCache;
 import chatter.messaging.event.EventHandler;
 import chatter.messaging.exception.ServerException;
-import chatter.messaging.hazelcast.HazelcastInstanceProvider;
-import chatter.common.model.ChatterConfiguration;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 @SpringBootApplication
 public class Main implements CommandLineRunner {
