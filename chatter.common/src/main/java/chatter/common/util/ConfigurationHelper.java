@@ -13,9 +13,22 @@ public class ConfigurationHelper {
     private static String configFilePrefix = "--configFile";
 
     public ChatterConfiguration getConfiguration(String... args) throws ChatterException {
+        ChatterConfiguration config;
+        if (args.length != 0) {
+            config = getConfigurationInFile(args);
+        }
+        else {
+            config = new ChatterConfiguration();
+            config.setPort(8080);
+        }
 
-        Optional<String> configFilePath = Arrays.stream(args).filter(item -> item.startsWith(ConfigurationHelper.configFilePrefix)).findFirst();
+        return config;
+    }
 
+    private ChatterConfiguration getConfigurationInFile(String[] args) throws ChatterException {
+        Optional<String> configFilePath = Arrays.stream(args)
+                                                .filter(item -> item != null && item.startsWith(ConfigurationHelper.configFilePrefix))
+                                                .findFirst();
         if (configFilePath.isPresent()) {
             String path = configFilePath.get().split(configFilePrefix + "=")[1];
             String file = ChatterUtil.readFile(path);

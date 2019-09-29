@@ -8,7 +8,7 @@ public class ConnectionManagerException extends OrchestrationException {
         super(message);
     }
 
-    public ConnectionManagerException(String message, Exception innerException) {
+    public ConnectionManagerException(String message, Throwable innerException) {
         super(message, innerException);
     }
 

@@ -2,6 +2,7 @@ package chatter;
 
 import chatter.common.exception.ChatterException;
 import chatter.common.model.ChatterConfiguration;
+import chatter.common.service.LifeCycle;
 import chatter.common.util.ConfigurationHelper;
 import chatter.messaging.IService;
 import chatter.messaging.Server;
@@ -18,13 +19,13 @@ import org.springframework.context.ApplicationContext;
 import java.util.Arrays;
 
 @SpringBootApplication
-public class Main implements CommandLineRunner {
+public class Main implements CommandLineRunner, LifeCycle {
 
     private Server server;
 
     private ServiceTracing serviceTracing;
 
-    private ChatterConfCache chatterConfCache;
+    private ChatterConfCache confCache;
 
     private ApplicationContext appContext;
 
@@ -34,7 +35,7 @@ public class Main implements CommandLineRunner {
                 Server server, ServiceTracing serviceTracing,
                 ChatterConfCache chatterConfCache, ConfigurationHelper configurationHelper) {
         this.server = server;
-        this.chatterConfCache = chatterConfCache;
+        this.confCache = chatterConfCache;
         this.serviceTracing = serviceTracing;
         this.appContext = appContext;
         this.configurationHelper = configurationHelper;
@@ -53,13 +54,13 @@ public class Main implements CommandLineRunner {
         registerForEmployeeBean();
 
         serviceTracing.start();
-        server.build(chatterConfCache.getChatterConfiguration().getPort());
+        server.build(confCache.getChatterConfiguration().getPort());
         server.start();
     }
 
     private void registerForEmployeeBean() {
-        String[] beanDefinitionNames = appContext.getBeanDefinitionNames();
-        Arrays.stream(beanDefinitionNames).map(item -> appContext.getBean(item)).forEach(bean -> {
+        String[] beanNames = appContext.getBeanDefinitionNames();
+        Arrays.stream(beanNames).map(appContext::getBean).forEach(bean -> {
             if (bean instanceof EventHandler) {
                 EventHandler eventHandler = (EventHandler) bean;
                 eventHandler.register();
@@ -70,11 +71,11 @@ public class Main implements CommandLineRunner {
     }
 
     private void populateConfigurationCache(String... args) {
-        ChatterConfiguration configuration;
+        ChatterConfiguration config;
         try {
-            configuration = configurationHelper.getConfiguration(args);
-            chatterConfCache.setChatterConfiguration(configuration);
-            chatterConfCache.setMessageTopicName("messaging-" + configuration.getPort());
+            config = configurationHelper.getConfiguration(args);
+            confCache.setChatterConfiguration(config);
+            confCache.setMessageTopicName("messaging-" + config.getPort());
         } catch (ChatterException e) {
             throw new ServerException("Configuration read error", e);
         }
@@ -87,6 +88,16 @@ public class Main implements CommandLineRunner {
             }
             serviceTracing.stop();
         }));
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void stop() {
+
     }
 
 }

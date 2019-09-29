@@ -8,7 +8,7 @@ public class ServerException extends OrchestrationException {
         super(message);
     }
 
-    public ServerException(String message, Exception innerException) {
+    public ServerException(String message, Throwable innerException) {
         super(message, innerException);
     }
 

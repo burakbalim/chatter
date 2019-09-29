@@ -4,16 +4,16 @@ import java.text.MessageFormat;
 
 public class ChatterException extends Exception {
 
-    private Exception innerException;
+    private Throwable innerException;
     private String message;
 
-    public ChatterException(String message, Exception innerException) {
-        super(message);
+    public ChatterException(String message, Throwable innerException) {
+        super(message, innerException);
         this.message = message;
         this.innerException = innerException;
     }
 
-    public ChatterException(String message, Exception innerException, Object... param) {
+    public ChatterException(String message, Throwable innerException, Object... param) {
         this.message = MessageFormat.format(message, param);
         this.innerException = innerException;
     }
