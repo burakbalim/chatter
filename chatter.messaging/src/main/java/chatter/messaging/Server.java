@@ -1,6 +1,7 @@
 package chatter.messaging;
 
 import chatter.common.exception.ChatterException;
+import chatter.common.service.LifeCycle;
 import chatter.messaging.exception.ServerException;
 import chatter.messaging.model.ConnectedUserModel;
 import chatter.messaging.model.User;
@@ -13,7 +14,7 @@ import java.net.Socket;
 import java.util.concurrent.*;
 
 @Service
-public class Server {
+public class Server implements LifeCycle {
 
     private ThreadPoolExecutor connectionExecutor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private ConnectionManager connectionManager;
@@ -32,13 +33,16 @@ public class Server {
         }
     }
 
+    @Override
     public void start() {
         stopSignal = false;
         connectionManager.start();
         Thread mainServerThread = new Thread(this::process, "Server Main Thread");
         mainServerThread.start();
+        registerShutdownHook();
     }
 
+    @Override
     public void stop() {
         stopSignal = true;
         connectionManager.stop();
@@ -47,10 +51,6 @@ public class Server {
         } catch (IOException e) {
             throw new ServerException("Exception while server closing", e);
         }
-    }
-
-    public ServiceState state() {
-        return !stopSignal ? ServiceState.RUNNING : ServiceState.STOPPED;
     }
 
     private void process() {

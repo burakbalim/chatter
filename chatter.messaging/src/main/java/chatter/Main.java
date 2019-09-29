@@ -19,7 +19,7 @@ import org.springframework.context.ApplicationContext;
 import java.util.Arrays;
 
 @SpringBootApplication
-public class Main implements CommandLineRunner, LifeCycle {
+public class Main implements CommandLineRunner {
 
     private Server server;
 
@@ -83,21 +83,7 @@ public class Main implements CommandLineRunner, LifeCycle {
 
     private void closeIfInterrupt() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (server.state() == ServiceState.RUNNING) {
-                server.stop();
-            }
             serviceTracing.stop();
         }));
     }
-
-    @Override
-    public void start() {
-
-    }
-
-    @Override
-    public void stop() {
-
-    }
-
 }

@@ -1,6 +1,6 @@
 #!/bin/bash
 SERVICE_NAME=chatter
-PATH_TO_JAR=chatter.messaging-1.0-SNAPSHOT.jar 
+PATH_TO_JAR=chatter.messaging-*.jar 
 PARAM=--configFile=chatter.json
 PID_PATH_NAME=/tmp/chatter-pid
 
