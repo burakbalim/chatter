@@ -4,9 +4,6 @@ RUN mkdir -p /app/chatter
 
 ARG CHATTER_HOME="/app/chatter"
 
-COPY chatter.messaging-1.0-SNAPSHOT.jar ${CHATTER_HOME} 
-
-
 RUN git clone https://github.com/hburakbalim/chatter.git \
   && cd chatter \
   && ./gradlew build -x test \
