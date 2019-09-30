@@ -2,11 +2,11 @@ package chatter.messaging;
 
 public interface IService {
 
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
 
-    public ServiceState state();
+    ServiceState state();
 
-    public String getName();
+    String getName();
 }

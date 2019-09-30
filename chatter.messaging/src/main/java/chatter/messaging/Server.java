@@ -59,7 +59,8 @@ public class Server implements LifeCycle {
                 Socket socket = serverSocket.accept();
                 Future<ConnectedUserModel> connection = connectionExecutor.submit(new UserRegisterTask(socket));
                 connectionManager.addQueue(connection);
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 throw new ServerException("Occurred Exception in Server Main Thread", e);
             }
         }

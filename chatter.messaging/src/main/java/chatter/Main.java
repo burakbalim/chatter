@@ -1,19 +1,17 @@
 package chatter;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import chatter.common.exception.ChatterException;
 import chatter.common.model.ChatterConfiguration;
-import chatter.common.service.LifeCycle;
 import chatter.common.util.ConfigurationHelper;
 import chatter.messaging.IService;
 import chatter.messaging.Server;
-import chatter.messaging.ServiceState;
 import chatter.messaging.ServiceTracing;
 import chatter.messaging.cache.ChatterConfCache;
 import chatter.messaging.event.EventHandler;
 import chatter.messaging.exception.ServerException;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Arrays;
@@ -82,8 +80,6 @@ public class Main implements CommandLineRunner {
     }
 
     private void closeIfInterrupt() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            serviceTracing.stop();
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> serviceTracing.stop()));
     }
 }
