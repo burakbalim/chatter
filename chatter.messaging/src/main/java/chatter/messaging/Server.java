@@ -3,7 +3,7 @@ package chatter.messaging;
 import chatter.common.exception.ChatterException;
 import chatter.common.service.LifeCycle;
 import chatter.messaging.exception.ServerException;
-import chatter.messaging.model.ConnectedUserModel;
+import chatter.messaging.model.ConnectedUser;
 import chatter.messaging.model.User;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +57,7 @@ public class Server implements LifeCycle {
         while (!stopSignal) {
             try {
                 Socket socket = serverSocket.accept();
-                Future<ConnectedUserModel> connection = connectionExecutor.submit(new UserRegisterTask(socket));
+                Future<ConnectedUser> connection = connectionExecutor.submit(new UserRegisterTask(socket));
                 connectionManager.addQueue(connection);
             }
             catch (IOException e) {
@@ -66,7 +66,7 @@ public class Server implements LifeCycle {
         }
     }
 
-    private class UserRegisterTask implements Callable<ConnectedUserModel> {
+    private class UserRegisterTask implements Callable<ConnectedUser> {
         private Socket socket;
 
         private UserRegisterTask(Socket socket) {
@@ -74,19 +74,19 @@ public class Server implements LifeCycle {
         }
 
         @Override
-        public ConnectedUserModel call() throws ChatterException {
-            ConnectedUserModel connectedUserModel;
+        public ConnectedUser call() throws ChatterException {
+            ConnectedUser connectedUser;
             try {
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 User user = (User) objectInputStream.readObject();
-                connectedUserModel = new ConnectedUserModel();
-                connectedUserModel.setUser(user);
-                connectedUserModel.setClient(socket);
+                connectedUser = new ConnectedUser();
+                connectedUser.setUser(user);
+                connectedUser.setClient(socket);
             }
             catch (IOException | ClassNotFoundException e) {
                 throw new ChatterException("Occurred Connection Exception ", e);
             }
-            return connectedUserModel;
+            return connectedUser;
         }
     }
 

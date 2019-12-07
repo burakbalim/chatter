@@ -1,9 +1,10 @@
 package chatter.messaging.model;
 
 import java.net.Socket;
+import java.nio.channels.Channel;
 import java.util.Objects;
 
-public class ConnectedUserModel {
+public class ConnectedUser {
 
     private Socket client;
     private User user;
@@ -28,7 +29,7 @@ public class ConnectedUserModel {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ConnectedUserModel that = (ConnectedUserModel) o;
+        ConnectedUser that = (ConnectedUser) o;
         return client.equals(that.client) &&
                 user.equals(that.user);
     }

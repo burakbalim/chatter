@@ -3,7 +3,7 @@ package chatter.messaging;
 import chatter.messaging.cache.DistributionCache;
 import chatter.messaging.event.Event;
 import chatter.messaging.event.IEvent;
-import chatter.messaging.model.CommunicationModel;
+import chatter.messaging.model.Communication;
 import chatter.messaging.model.UserEventTopic;
 import chatter.messaging.model.MessageEvent;
 import org.springframework.stereotype.Service;
@@ -21,16 +21,15 @@ public class MessageSender {
         this.event = event;
     }
 
-    void send(CommunicationModel communicationModel) {
-        String message = communicationModel.getMessage();
+    void send(Communication communication) {
+        String message = communication.getMessage();
 
-        communicationModel.getSentUserIds().stream().map(userId ->
-                distributionCache.get(userId)).forEach(userEventTopic -> writeMessage(userEventTopic, message));
+        communication.getSentUserIds().stream().map(userId -> distributionCache.get(userId)).forEach(userEventTopic -> fire(userEventTopic, message));
 
-        writeMessage(distributionCache.get(communicationModel.getSenderUserId()), message);
+        fire(distributionCache.get(communication.getSenderUserId()), message);
     }
 
-    private void writeMessage(UserEventTopic userEventTopic, String message) {
+    private void fire(UserEventTopic userEventTopic, String message) {
         event.fire(getEvent(userEventTopic, message));
     }
 

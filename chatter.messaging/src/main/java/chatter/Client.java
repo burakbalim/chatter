@@ -1,6 +1,6 @@
 package chatter;
 
-import chatter.messaging.model.CommunicationModel;
+import chatter.messaging.model.Communication;
 import chatter.messaging.model.User;
 
 import java.io.IOException;
@@ -40,15 +40,15 @@ public class Client {
 
                     String message = scanner.next();
 
-                    CommunicationModel communicationModel = new CommunicationModel();
-                    communicationModel.setMessage(message);
-                    communicationModel.setSenderUserId(userId);
+                    Communication communication = new Communication();
+                    communication.setMessage(message);
+                    communication.setSenderUserId(userId);
 
                     out.print("Send for user: ");
                     String userIds = scanner.next();
-                    communicationModel.setSentUserIds(getUserId(userIds.split(",")));
+                    communication.setSentUserIds(getUserId(userIds.split(",")));
 
-                    outputStream.writeObject(communicationModel);
+                    outputStream.writeObject(communication);
                 }
             } catch (IOException ignored) {
             }

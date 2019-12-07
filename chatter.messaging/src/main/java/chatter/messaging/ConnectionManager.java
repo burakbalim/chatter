@@ -4,7 +4,7 @@ import chatter.messaging.cache.ChatterConfCache;
 import chatter.messaging.cache.DistributionCache;
 import chatter.messaging.cache.OnlineUser;
 import chatter.messaging.exception.ConnectionManagerException;
-import chatter.messaging.model.ConnectedUserModel;
+import chatter.messaging.model.ConnectedUser;
 import chatter.messaging.model.UserEventTopic;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ public class ConnectionManager implements IService {
 
     private Logger logger = Logger.getLogger(ConnectionManager.class.getName());
 
-    private ThreadPoolExecutor workerTaskExecutor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+    private ThreadPoolExecutor workerTaskExecutor = new ThreadPoolExecutor(10, 100, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private LinkedBlockingQueue<Future> queue = new LinkedBlockingQueue<>();
     private DistributionCache distributionCache;
     private ChatterConfCache chatterConfCache;
@@ -63,8 +63,8 @@ public class ConnectionManager implements IService {
     private void executeFuture(Future future) {
         try {
             if (future.isDone()) {
-                ConnectedUserModel connection = (ConnectedUserModel) future.get();
-                cachePopulate(connection);
+                ConnectedUser connection = (ConnectedUser) future.get();
+                populateCache(connection);
                 workerTaskExecutor.submit(new WorkerTask(connection, messageSender, onlineUser, distributionCache));
             } else {
                 queue.add(future);
@@ -72,19 +72,19 @@ public class ConnectionManager implements IService {
         } catch (InterruptedException e) {
             isStopSignal = true;
             Thread.currentThread().interrupt();
-            throw new ConnectionManagerException("Occurred exception while user operation", e);
+            throw new ConnectionManagerException("Occurred exception while user operation. Exception:", e);
         }  catch (ExecutionException e) {
             logger.log(Level.WARNING, "Connection Manager execution error. Exception: {0}", e);
         }
     }
 
-    private void cachePopulate(ConnectedUserModel connection) {
+    private void populateCache(ConnectedUser connection) {
         long id = connection.getUser().getId();
         onlineUser.put(id, connection);
         distributionCache.put(id, new UserEventTopic(id, chatterConfCache.getMessageTopicName()));
     }
 
-    void addQueue(Future<ConnectedUserModel> connectedUserModel) {
+    void addQueue(Future<ConnectedUser> connectedUserModel) {
         queue.add(connectedUserModel);
     }
 

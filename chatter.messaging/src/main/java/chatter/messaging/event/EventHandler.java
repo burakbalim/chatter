@@ -5,14 +5,13 @@ import chatter.messaging.hazelcast.HazelcastInstanceProvider;
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
 
-import java.sql.Time;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 public abstract class EventHandler implements MessageListener<Object> {
 
-    private ExecutorService executorService = new ThreadPoolExecutor(10, 1000, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+    private ExecutorService executor = new ThreadPoolExecutor(10, 1000, 100, TimeUnit.NANOSECONDS, new LinkedBlockingQueue<>());
     private static Logger logger = Logger.getLogger(EventHandler.class.getName());
     private HazelcastInstanceProvider hazelcastInstanceProvider;
 
@@ -26,7 +25,7 @@ public abstract class EventHandler implements MessageListener<Object> {
 
     @Override
     public void onMessage(Message<Object> message) {
-        executorService.submit(messageHandle(message));
+        executor.submit(messageHandle(message));
     }
 
     private Runnable messageHandle(Message<Object> message) {
@@ -37,7 +36,6 @@ public abstract class EventHandler implements MessageListener<Object> {
                 handle(messageObject);
             } catch (MessageBusException e) {
                 logger.log(Level.WARNING, "Occurred Exception in EventHandler. Exception: {0}", e);
-
             }
         };
     }

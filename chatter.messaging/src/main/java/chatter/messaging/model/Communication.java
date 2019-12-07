@@ -3,7 +3,7 @@ package chatter.messaging.model;
 import java.io.Serializable;
 import java.util.List;
 
-public class CommunicationModel implements Serializable {
+public class Communication implements Serializable {
 
     private String message;
     private List<Long> sentUserIds;
