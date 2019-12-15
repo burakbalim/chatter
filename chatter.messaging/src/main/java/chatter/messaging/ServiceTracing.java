@@ -38,9 +38,9 @@ public class ServiceTracing {
     private Runnable checkApplicationService() {
         return () -> serviceList.forEach(service -> {
             if (!service.state().equals(ServiceState.STOPPED)) {
-                logger.log(Level.SEVERE, "Service is running. Service: {0}", service.getName());
+                logger.log(Level.INFO, "Service is running. Service: {0}", service.getName());
             } else {
-                logger.log(Level.INFO, "Service is not running. Trying to start. Service: {0}", service.getName());
+                logger.log(Level.SEVERE, "Service is not running. Trying to start. Service: {0}", service.getName());
                 service.start();
             }
         });

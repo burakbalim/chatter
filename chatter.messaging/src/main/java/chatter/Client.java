@@ -71,10 +71,9 @@ public class Client {
     }
 
     private static Socket createClient(long id) throws IOException {
-        Socket socket;
         out.println("Define port");
         int port = scanner.nextInt();
-        socket = new Socket("localhost", port);
+        Socket socket = new Socket("localhost", port);
         ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
         outputStream.writeObject(createUser(id));
         return socket;
@@ -88,5 +87,4 @@ public class Client {
         user.setId(id);
         return user;
     }
-
 }

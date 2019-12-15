@@ -3,22 +3,22 @@ package chatter.messaging.model;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class UserEventTopic implements Serializable {
+public class UserReceiverTopic implements Serializable {
 
     private Long userId;
-    private String eventTopic;
+    private String messageBusName;
 
-    public UserEventTopic(Long userId, String eventTopic) {
-        this.eventTopic = eventTopic;
+    public UserReceiverTopic(Long userId, String messageBusName) {
+        this.messageBusName = messageBusName;
         this.userId = userId;
     }
 
-    public String getEventTopic() {
-        return eventTopic;
+    public String getMessageBusName() {
+        return messageBusName;
     }
 
-    public void setEventTopic(String eventTopic) {
-        this.eventTopic = eventTopic;
+    public void setMessageBusName(String messageBusName) {
+        this.messageBusName = messageBusName;
     }
 
     public Long getUserId() {
@@ -33,13 +33,13 @@ public class UserEventTopic implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserEventTopic that = (UserEventTopic) o;
-        return Objects.equals(eventTopic, that.eventTopic) &&
+        UserReceiverTopic that = (UserReceiverTopic) o;
+        return Objects.equals(messageBusName, that.messageBusName) &&
                 Objects.equals(userId, that.userId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(eventTopic, userId);
+        return Objects.hash(messageBusName, userId);
     }
 }

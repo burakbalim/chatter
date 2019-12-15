@@ -13,8 +13,8 @@ import chatter.messaging.exception.ServerException;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
-
 import java.util.Arrays;
+import java.util.UUID;
 
 @SpringBootApplication
 public class Main implements CommandLineRunner {
@@ -73,7 +73,7 @@ public class Main implements CommandLineRunner {
         try {
             config = configurationHelper.getConfiguration(args);
             confCache.setChatterConfiguration(config);
-            confCache.setMessageTopicName("messaging-" + config.getPort());
+            confCache.setMessageTopicName("messaging-" + UUID.randomUUID());
         } catch (ChatterException e) {
             throw new ServerException("Configuration read error", e);
         }

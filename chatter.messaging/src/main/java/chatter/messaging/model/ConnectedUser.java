@@ -1,7 +1,6 @@
 package chatter.messaging.model;
 
 import java.net.Socket;
-import java.nio.channels.Channel;
 import java.util.Objects;
 
 public class ConnectedUser {

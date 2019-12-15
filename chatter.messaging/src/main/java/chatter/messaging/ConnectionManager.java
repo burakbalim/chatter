@@ -5,7 +5,7 @@ import chatter.messaging.cache.DistributionCache;
 import chatter.messaging.cache.OnlineUser;
 import chatter.messaging.exception.ConnectionManagerException;
 import chatter.messaging.model.ConnectedUser;
-import chatter.messaging.model.UserEventTopic;
+import chatter.messaging.model.UserReceiverTopic;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.*;
@@ -17,8 +17,9 @@ public class ConnectionManager implements IService {
 
     private Logger logger = Logger.getLogger(ConnectionManager.class.getName());
 
-    private ThreadPoolExecutor workerTaskExecutor = new ThreadPoolExecutor(10, 100, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
-    private LinkedBlockingQueue<Future> queue = new LinkedBlockingQueue<>();
+    private static ConnectedUserQueue<Future> connectedUserQueue = new ConnectedUserQueue<>();
+
+    private ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 1000, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private DistributionCache distributionCache;
     private ChatterConfCache chatterConfCache;
     private OnlineUser onlineUser;
@@ -43,7 +44,7 @@ public class ConnectionManager implements IService {
     @Override
     public void stop() {
         isStopSignal = true;
-        workerTaskExecutor.shutdownNow();
+        executor.shutdownNow();
     }
 
     @Override
@@ -53,26 +54,26 @@ public class ConnectionManager implements IService {
 
     private void process() {
         while (!isStopSignal) {
-            Future future = queue.poll();
+            Future future = connectedUserQueue.poll();
             if(future != null) {
-                executeFuture(future);
+                executeForConnectedUser(future);
             }
         }
     }
 
-    private void executeFuture(Future future) {
+    private void executeForConnectedUser(Future future) {
         try {
             if (future.isDone()) {
                 ConnectedUser connection = (ConnectedUser) future.get();
                 populateCache(connection);
-                workerTaskExecutor.submit(new WorkerTask(connection, messageSender, onlineUser, distributionCache));
+                executor.submit(new WorkerTask(connection, messageSender, onlineUser, distributionCache));
             } else {
-                queue.add(future);
+                connectedUserQueue.add(future);
             }
         } catch (InterruptedException e) {
             isStopSignal = true;
             Thread.currentThread().interrupt();
-            throw new ConnectionManagerException("Occurred exception while user operation. Exception:", e);
+            throw new ConnectionManagerException("Occurred exception while user operation.", e);
         }  catch (ExecutionException e) {
             logger.log(Level.WARNING, "Connection Manager execution error. Exception: {0}", e);
         }
@@ -81,11 +82,11 @@ public class ConnectionManager implements IService {
     private void populateCache(ConnectedUser connection) {
         long id = connection.getUser().getId();
         onlineUser.put(id, connection);
-        distributionCache.put(id, new UserEventTopic(id, chatterConfCache.getMessageTopicName()));
+        distributionCache.put(id, new UserReceiverTopic(id, chatterConfCache.getMessageTopicName()));
     }
 
     void addQueue(Future<ConnectedUser> connectedUserModel) {
-        queue.add(connectedUserModel);
+        connectedUserQueue.add(connectedUserModel);
     }
 
     public ServiceState state() {
